@@ -1,0 +1,3 @@
+{
+  "/api/users/tweets/route": "app/api/users/tweets/route.js"
+}

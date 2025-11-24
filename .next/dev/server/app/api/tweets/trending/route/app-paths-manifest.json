@@ -1,0 +1,3 @@
+{
+  "/api/tweets/trending/route": "app/api/tweets/trending/route.js"
+}

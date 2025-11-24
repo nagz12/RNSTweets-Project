@@ -1,0 +1,6 @@
+{
+  "/api/tweets/feed/route": "app/api/tweets/feed/route.js",
+  "/api/tweets/trending/route": "app/api/tweets/trending/route.js",
+  "/feed/page": "app/feed/page.js",
+  "/page": "app/page.js"
+}
