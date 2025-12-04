@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -11,12 +11,14 @@ import {
   Send,
 } from "lucide-react";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+
 interface User {
   id: string;
   displayName: string;
   username: string;
   avatar?: string;
 }
+
 interface Tweet {
   id: string;
   content: string;
@@ -31,7 +33,8 @@ interface Tweet {
   isFlagged?: boolean;
   isDeleted?: boolean;
 }
-function TweetDetailContent() {
+
+export function TweetDetailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const tweetId = searchParams.get("id");
@@ -42,40 +45,45 @@ function TweetDetailContent() {
   const [posting, setPosting] = useState(false);
   const [error, setError] = useState("");
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+
   useEffect(() => {
     const token = localStorage.getItem("auth-token");
     if (!token) {
       router.push("/login");
       return;
     }
-    if (tweetId) {
-      fetchTweetDetails();
+    if (!tweetId) {
+      setLoading(false);
+      setError("Tweet ID is missing.");
+      return;
+    }
+    fetchTweetDetails();
+    async function fetchTweetDetails() {
+      try {
+        const token = localStorage.getItem("auth-token");
+        const tweetResponse = await fetch("/api/tweets/feed", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const tweetData = await tweetResponse.json();
+        const foundTweet = tweetData.tweets?.find((t: Tweet) => t.id === tweetId);
+        if (foundTweet) {
+          setTweet(foundTweet);
+        }
+        const repliesResponse = await fetch(`/api/tweets/${tweetId}/replies`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const repliesData = await repliesResponse.json();
+        if (repliesData.replies) {
+          setReplies(repliesData.replies);
+        }
+      } catch (err) {
+        console.error("Error fetching tweet:", err);
+      } finally {
+        setLoading(false);
+      }
     }
   }, [tweetId, router]);
-  const fetchTweetDetails = async () => {
-    try {
-      const token = localStorage.getItem("auth-token");
-      const tweetResponse = await fetch("/api/tweets/feed", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const tweetData = await tweetResponse.json();
-      const foundTweet = tweetData.tweets?.find((t: Tweet) => t.id === tweetId);
-      if (foundTweet) {
-        setTweet(foundTweet);
-      }
-      const repliesResponse = await fetch(`/api/tweets/${tweetId}/replies`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const repliesData = await repliesResponse.json();
-      if (repliesData.replies) {
-        setReplies(repliesData.replies);
-      }
-    } catch (err) {
-      console.error("Error fetching tweet:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+
   const handlePostReply = async () => {
     if (!replyText.trim()) return;
     setPosting(true);
@@ -104,7 +112,7 @@ function TweetDetailContent() {
         setReplyText("");
         setError("");
         setAiSuggestions([]);
-        await fetchTweetDetails();
+        await refreshTweet();
       }
     } catch (err) {
       setError("Failed to post reply");
@@ -112,6 +120,30 @@ function TweetDetailContent() {
       setPosting(false);
     }
   };
+
+  const refreshTweet = async () => {
+    try {
+      const token = localStorage.getItem("auth-token");
+      const tweetResponse = await fetch("/api/tweets/feed", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const tweetData = await tweetResponse.json();
+      const foundTweet = tweetData.tweets?.find((t: Tweet) => t.id === tweetId);
+      if (foundTweet) {
+        setTweet(foundTweet);
+      }
+      const repliesResponse = await fetch(`/api/tweets/${tweetId}/replies`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const repliesData = await repliesResponse.json();
+      if (repliesData.replies) {
+        setReplies(repliesData.replies);
+      }
+    } catch (err) {
+      console.error("Error refreshing tweet:", err);
+    }
+  };
+
   const handleLikeTweet = async (id: string) => {
     try {
       const token = localStorage.getItem("auth-token");
@@ -123,11 +155,12 @@ function TweetDetailContent() {
         },
         body: JSON.stringify({ tweetId: id }),
       });
-      await fetchTweetDetails();
+      await refreshTweet();
     } catch (err) {
       console.error("Error liking tweet:", err);
     }
   };
+
   const handleRetweetTweet = async (id: string) => {
     try {
       const token = localStorage.getItem("auth-token");
@@ -139,11 +172,12 @@ function TweetDetailContent() {
         },
         body: JSON.stringify({ tweetId: id }),
       });
-      await fetchTweetDetails();
+      await refreshTweet();
     } catch (err) {
       console.error("Error retweeting:", err);
     }
   };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString("en-US", {
@@ -154,10 +188,10 @@ function TweetDetailContent() {
       minute: "2-digit",
     });
   };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="flex h-screen max-h-screen">
-        {/* Mobile Header */}
         <div className="fixed top-0 left-0 right-0 bg-card border-b border-border z-40 px-4 py-3 flex items-center justify-between">
           <button
             onClick={() => router.back()}
@@ -168,7 +202,6 @@ function TweetDetailContent() {
           <h1 className="text-xl font-bold text-primary">Tweet</h1>
           <ThemeSwitcher />
         </div>
-        {/* Main Content */}
         <div className="flex-1 max-w-2xl mx-auto overflow-y-auto mt-16">
           {loading ? (
             <div className="p-8 text-center text-muted-foreground">
@@ -180,7 +213,6 @@ function TweetDetailContent() {
             </div>
           ) : (
             <>
-              {/* Original Tweet */}
               <div className="border-b border-border p-6 bg-card">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex-shrink-0" />
@@ -196,7 +228,7 @@ function TweetDetailContent() {
                     </p>
                   </div>
                 </div>
-                {(tweet.isFlagged || tweet.isDeleted) ? (
+                {tweet.isFlagged || tweet.isDeleted ? (
                   <div className="mb-4 p-3 bg-muted/50 border border-border rounded-lg">
                     <p className="text-muted-foreground text-sm italic">
                       This content was removed for policy reasons
@@ -254,7 +286,6 @@ function TweetDetailContent() {
                   </button>
                 </div>
               </div>
-              {/* Reply Composer */}
               <div className="border-b border-border p-4 bg-card">
                 <textarea
                   value={replyText}
@@ -301,7 +332,6 @@ function TweetDetailContent() {
                   </button>
                 </div>
               </div>
-              {/* Replies List */}
               <div>
                 {replies.length === 0 ? (
                   <div className="p-8 text-center text-muted-foreground">
@@ -327,7 +357,7 @@ function TweetDetailContent() {
                               @{reply.author.username}
                             </span>
                           </div>
-                          {(reply.isFlagged || reply.isDeleted) ? (
+                          {reply.isFlagged || reply.isDeleted ? (
                             <div className="mt-2 p-3 bg-muted/50 border border-border rounded-lg">
                               <p className="text-muted-foreground text-sm italic">
                                 This content was removed for policy reasons
@@ -379,16 +409,3 @@ function TweetDetailContent() {
   );
 }
 
-export default function TweetDetailPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-background text-muted-foreground flex items-center justify-center">
-          Loading tweet...
-        </div>
-      }
-    >
-      <TweetDetailContent />
-    </Suspense>
-  );
-}

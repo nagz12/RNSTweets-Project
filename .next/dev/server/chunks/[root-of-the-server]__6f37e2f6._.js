@@ -139,7 +139,7 @@ __turbopack_context__.s([
 ]);
 var __TURBOPACK__imported__module__$5b$externals$5d2f$mongoose__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/mongoose [external] (mongoose, cjs)");
 ;
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://admin:Admin.12345@cluster0.ajzsclc.mongodb.net/?appName=Cluster0";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/rnstweets";
 if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
 ;
 let isConnected = false;

@@ -298,7 +298,7 @@ const notificationSchema = new __TURBOPACK__imported__module__$5b$externals$5d2f
 });
 const Notification = __TURBOPACK__imported__module__$5b$externals$5d2f$mongoose__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.Notification || __TURBOPACK__imported__module__$5b$externals$5d2f$mongoose__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].model("Notification", notificationSchema);
 }),
-"[project]/OneDrive/Desktop/rnst-weets-social-platform/app/api/tweets/[id]/like/route.ts [app-route] (ecmascript)", ((__turbopack_context__) => {
+"[project]/OneDrive/Desktop/rnst-weets-social-platform/app/api/tweets/[id]/retweet/route.ts [app-route] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
 __turbopack_context__.s([
@@ -352,21 +352,21 @@ async function POST(req) {
             });
         }
         const userIdStr = user.userId.toString();
-        const likeIndex = tweet.likes.findIndex((id)=>id.toString() === userIdStr);
-        let isLiked = false;
-        if (likeIndex > -1) {
-            // Unlike
-            tweet.likes.splice(likeIndex, 1);
+        const retweetIndex = tweet.retweets.findIndex((id)=>id.toString() === userIdStr);
+        let isRetweeted = false;
+        if (retweetIndex > -1) {
+            // Un-retweet
+            tweet.retweets.splice(retweetIndex, 1);
         } else {
-            // Like
-            tweet.likes.push(user.userId);
-            isLiked = true;
-            // Create notification for tweet author (if not self-like)
+            // Retweet
+            tweet.retweets.push(user.userId);
+            isRetweeted = true;
+            // Create notification for tweet author (if not self-retweet)
             if (tweet.author.toString() !== userIdStr) {
                 await __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$lib$2f$models$2f$Notification$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["Notification"].create({
                     user: tweet.author,
                     actor: user.userId,
-                    type: "like",
+                    type: "retweet",
                     tweet: tweetId,
                     isRead: false
                 });
@@ -375,13 +375,13 @@ async function POST(req) {
         await tweet.save();
         return __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             success: true,
-            isLiked,
-            likesCount: tweet.likes.length
+            isRetweeted,
+            retweetsCount: tweet.retweets.length
         });
     } catch (error) {
-        console.error("Like tweet error:", error);
+        console.error("Retweet error:", error);
         return __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            error: "Failed to like/unlike tweet"
+            error: "Failed to retweet/unretweet"
         }, {
             status: 500
         });
@@ -390,4 +390,4 @@ async function POST(req) {
 }),
 ];
 
-//# sourceMappingURL=%5Broot-of-the-server%5D__23c4f5d1._.js.map
+//# sourceMappingURL=%5Broot-of-the-server%5D__2a96f394._.js.map
