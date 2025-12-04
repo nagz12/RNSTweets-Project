@@ -112,7 +112,9 @@ export function TweetDetailContent() {
         setReplyText("");
         setError("");
         setAiSuggestions([]);
-        await refreshTweet();
+        if (tweetId) {
+          await refreshTweet(tweetId);
+        }
       }
     } catch (err) {
       setError("Failed to post reply");
@@ -121,20 +123,26 @@ export function TweetDetailContent() {
     }
   };
 
-  const refreshTweet = async () => {
+  const refreshTweet = async (currentTweetId: string | null = tweetId) => {
+    if (!currentTweetId) return;
     try {
       const token = localStorage.getItem("auth-token");
       const tweetResponse = await fetch("/api/tweets/feed", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const tweetData = await tweetResponse.json();
-      const foundTweet = tweetData.tweets?.find((t: Tweet) => t.id === tweetId);
+      const foundTweet = tweetData.tweets?.find(
+        (t: Tweet) => t.id === currentTweetId
+      );
       if (foundTweet) {
         setTweet(foundTweet);
       }
-      const repliesResponse = await fetch(`/api/tweets/${tweetId}/replies`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const repliesResponse = await fetch(
+        `/api/tweets/${currentTweetId}/replies`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       const repliesData = await repliesResponse.json();
       if (repliesData.replies) {
         setReplies(repliesData.replies);
@@ -155,7 +163,7 @@ export function TweetDetailContent() {
         },
         body: JSON.stringify({ tweetId: id }),
       });
-      await refreshTweet();
+      await refreshTweet(id);
     } catch (err) {
       console.error("Error liking tweet:", err);
     }
@@ -172,7 +180,7 @@ export function TweetDetailContent() {
         },
         body: JSON.stringify({ tweetId: id }),
       });
-      await refreshTweet();
+      await refreshTweet(id);
     } catch (err) {
       console.error("Error retweeting:", err);
     }
@@ -228,7 +236,7 @@ export function TweetDetailContent() {
                     </p>
                   </div>
                 </div>
-                {tweet.isFlagged || tweet.isDeleted ? (
+                {(tweet.isFlagged || tweet.isDeleted) ? (
                   <div className="mb-4 p-3 bg-muted/50 border border-border rounded-lg">
                     <p className="text-muted-foreground text-sm italic">
                       This content was removed for policy reasons
@@ -357,7 +365,7 @@ export function TweetDetailContent() {
                               @{reply.author.username}
                             </span>
                           </div>
-                          {reply.isFlagged || reply.isDeleted ? (
+                          {(reply.isFlagged || reply.isDeleted) ? (
                             <div className="mt-2 p-3 bg-muted/50 border border-border rounded-lg">
                               <p className="text-muted-foreground text-sm italic">
                                 This content was removed for policy reasons
