@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/db";
 import { Tweet } from "@/lib/models/Tweet";
 import { User } from "@/lib/models/User";
 import { Notification } from "@/lib/models/Notification";
+import { ensureEmpathyDefaults } from "@/lib/empathy";
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,6 +30,15 @@ export async function POST(req: NextRequest) {
     }
 
     await connectDB();
+
+    const dbUser = await User.findById(user.userId);
+    await ensureEmpathyDefaults(dbUser);
+    if (dbUser?.isSuspended) {
+      return NextResponse.json(
+        { error: "Your account is suspended due to low empathy score." },
+        { status: 403 }
+      );
+    }
 
     const tweet = await Tweet.findById(tweetId);
     if (!tweet) {

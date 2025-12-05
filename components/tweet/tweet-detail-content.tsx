@@ -45,6 +45,7 @@ export function TweetDetailContent() {
   const [posting, setPosting] = useState(false);
   const [error, setError] = useState("");
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+  const [userStatus, setUserStatus] = useState<{ isSuspended: boolean; empathyScore: number } | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("auth-token");
@@ -52,12 +53,30 @@ export function TweetDetailContent() {
       router.push("/login");
       return;
     }
+    fetchUserStatus();
     if (!tweetId) {
       setLoading(false);
       setError("Tweet ID is missing.");
       return;
     }
     fetchTweetDetails();
+    async function fetchUserStatus() {
+      try {
+        const token = localStorage.getItem("auth-token");
+        const res = await fetch("/api/users/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (!data.error) {
+          setUserStatus({
+            isSuspended: data.isSuspended ?? false,
+            empathyScore: data.empathyScore ?? 100,
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load user status", err);
+      }
+    }
     async function fetchTweetDetails() {
       try {
         const token = localStorage.getItem("auth-token");
@@ -85,6 +104,10 @@ export function TweetDetailContent() {
   }, [tweetId, router]);
 
   const handlePostReply = async () => {
+    if (userStatus?.isSuspended) {
+      setError("Your account is suspended due to low empathy score.");
+      return;
+    }
     if (!replyText.trim()) return;
     setPosting(true);
     setError("");
@@ -152,7 +175,7 @@ export function TweetDetailContent() {
     }
   };
 
-  const handleLikeTweet = async (id: string) => {
+  const handleLikeTweet = async (id: string, parentTweetId: string) => {
     try {
       const token = localStorage.getItem("auth-token");
       await fetch(`/api/tweets/${id}/like`, {
@@ -163,13 +186,13 @@ export function TweetDetailContent() {
         },
         body: JSON.stringify({ tweetId: id }),
       });
-      await refreshTweet(id);
+      await refreshTweet(parentTweetId);
     } catch (err) {
       console.error("Error liking tweet:", err);
     }
   };
 
-  const handleRetweetTweet = async (id: string) => {
+  const handleRetweetTweet = async (id: string, parentTweetId: string) => {
     try {
       const token = localStorage.getItem("auth-token");
       await fetch(`/api/tweets/${id}/retweet`, {
@@ -180,7 +203,7 @@ export function TweetDetailContent() {
         },
         body: JSON.stringify({ tweetId: id }),
       });
-      await refreshTweet(id);
+      await refreshTweet(parentTweetId);
     } catch (err) {
       console.error("Error retweeting:", err);
     }
@@ -269,7 +292,7 @@ export function TweetDetailContent() {
                     <MessageCircle size={20} />
                   </button>
                   <button
-                    onClick={() => handleRetweetTweet(tweet.id)}
+                    onClick={() => handleRetweetTweet(tweet.id, tweet.id)}
                     className={`flex items-center space-x-2 transition-colors p-2 ${
                       tweet.isRetweeted ? "text-primary" : "hover:text-primary"
                     }`}
@@ -277,7 +300,7 @@ export function TweetDetailContent() {
                     <Repeat2 size={20} />
                   </button>
                   <button
-                    onClick={() => handleLikeTweet(tweet.id)}
+                    onClick={() => handleLikeTweet(tweet.id, tweet.id)}
                     className={`flex items-center space-x-2 transition-colors p-2 ${
                       tweet.isLiked
                         ? "text-destructive"
@@ -298,6 +321,7 @@ export function TweetDetailContent() {
                 <textarea
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
+                  disabled={userStatus?.isSuspended}
                   placeholder="Tweet your reply"
                   className="w-full bg-input border border-border rounded-lg px-4 py-3 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                   rows={3}
@@ -332,13 +356,18 @@ export function TweetDetailContent() {
                   </span>
                   <button
                     onClick={handlePostReply}
-                    disabled={posting || !replyText.trim()}
+                    disabled={posting || !replyText.trim() || userStatus?.isSuspended}
                     className="bg-primary text-primary-foreground px-6 py-2 rounded-full hover:opacity-90 transition-opacity font-medium disabled:opacity-50 flex items-center gap-2"
                   >
                     {posting ? "Posting..." : "Reply"}
                     <Send size={16} />
                   </button>
                 </div>
+                {userStatus?.isSuspended && (
+                  <div className="mt-3 bg-destructive/10 border border-destructive/30 text-destructive text-sm rounded-lg p-3">
+                    Your account is suspended due to low empathy score. Replying is disabled.
+                  </div>
+                )}
               </div>
               <div>
                 {replies.length === 0 ? (
@@ -378,7 +407,7 @@ export function TweetDetailContent() {
                           )}
                           <div className="flex gap-6 mt-3 text-muted-foreground text-sm">
                             <button
-                              onClick={() => handleLikeTweet(reply.id)}
+                              onClick={() => handleLikeTweet(reply.id, tweet.id)}
                               className={`flex items-center gap-1 transition-colors ${
                                 reply.isLiked
                                   ? "text-destructive"
@@ -392,7 +421,7 @@ export function TweetDetailContent() {
                               <span>{reply.likes}</span>
                             </button>
                             <button
-                              onClick={() => handleRetweetTweet(reply.id)}
+                              onClick={() => handleRetweetTweet(reply.id, tweet.id)}
                               className={`flex items-center gap-1 transition-colors ${
                                 reply.isRetweeted
                                   ? "text-primary"

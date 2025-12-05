@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/db";
 import { Message } from "@/lib/models/Message";
 import { User } from "@/lib/models/User";
 import { Notification } from "@/lib/models/Notification";
+import { ensureEmpathyDefaults } from "@/lib/empathy";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
@@ -114,6 +115,14 @@ export async function POST(req: NextRequest) {
     await connectDB();
 
     const recipient = await User.findById(recipientId);
+    const sender = await User.findById(decoded.userId);
+    await ensureEmpathyDefaults(sender);
+    if (sender?.isSuspended) {
+      return NextResponse.json(
+        { error: "Your account is suspended due to low empathy score." },
+        { status: 403 }
+      );
+    }
     if (!recipient) {
       return NextResponse.json(
         { error: "Recipient not found" },

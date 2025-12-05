@@ -8,6 +8,7 @@ import { Demerit } from "@/lib/models/Demerit";
 import { EmpathyLog } from "@/lib/models/EmpathyLog";
 import { BullyingPattern } from "@/lib/models/BullyingPattern";
 import { moderateContent, getSuspensionThreshold } from "@/lib/ai-moderation";
+import { applyEmpathyViolation, ensureEmpathyDefaults } from "@/lib/empathy";
 import {
   analyzeSentiment,
   enhanceContent,
@@ -43,9 +44,10 @@ export async function POST(req: NextRequest) {
     await connectDB();
 
     const dbUser = await User.findById(user.userId);
+    await ensureEmpathyDefaults(dbUser);
     if (dbUser?.isSuspended) {
       return NextResponse.json(
-        { error: "Your account is suspended" },
+        { error: "Your account is suspended due to low empathy score." },
         { status: 403 }
       );
     }
@@ -115,11 +117,10 @@ export async function POST(req: NextRequest) {
       bullyingDetected ||
       !contextCheck.isAppropriate
     ) {
-      const totalPoints = moderation.points + (bullyingDetected ? 10 : 0);
-
-      await User.updateOne(
-        { _id: dbUser?._id },
-        { $inc: { demeritPoints: totalPoints } }
+      const penaltyPoints = 15;
+      const { empathyScore, totalDemerits, isSuspended } = await applyEmpathyViolation(
+        dbUser!._id.toString(),
+        penaltyPoints
       );
 
       // Log moderation decision for blocked reply
@@ -135,47 +136,31 @@ export async function POST(req: NextRequest) {
         user: dbUser?._id,
         tweet: tweetId,
         reason,
-        points: totalPoints,
+        points: penaltyPoints,
         toxicityScore: moderation.toxicityScore,
         content,
       });
 
-      // Update empathy score for blocked toxic reply (decrease significantly)
-      const { calculateNewEmpathyScore } = await import("@/lib/utils-twitter");
-      const currentEmpathyScore = dbUser?.empathyScore ?? 50;
-      const empathyScoreForToxic = bullyingDetected ? 0.05 : (moderation.isToxic ? 0.1 : 0.2);
-      const newEmpathyScore = calculateNewEmpathyScore(
-        currentEmpathyScore,
-        empathyScoreForToxic,
-        true // Mark as toxic
-      );
-
-      await User.updateOne(
-        { _id: dbUser?._id },
-        { 
-          empathyScore: newEmpathyScore,
-          // Suspend if empathy drops below 35% OR demerits exceed threshold
-          isSuspended: newEmpathyScore < 35 || (dbUser?.demeritPoints ?? 0) + totalPoints >= getSuspensionThreshold()
-        }
-      );
-
-      const updatedUser = await User.findById(dbUser?._id);
-      // Double check suspension status
-      if (
-        updatedUser &&
-        (updatedUser.demeritPoints >= getSuspensionThreshold() || updatedUser.empathyScore < 35)
-      ) {
-        await User.updateOne({ _id: dbUser?._id }, { isSuspended: true });
-        console.log(`[MODERATION] User ${dbUser?._id} suspended - Demerits: ${updatedUser.demeritPoints}, Empathy: ${updatedUser.empathyScore}%`);
+      if (isSuspended || empathyScore <= 35 || totalDemerits >= getSuspensionThreshold()) {
+        await User.updateOne(
+          { _id: dbUser?._id },
+          {
+            isSuspended: true,
+            suspendedAt: dbUser?.suspendedAt ?? new Date(),
+          }
+        );
+        console.log(
+          `[MODERATION] User ${dbUser?._id} suspended - Demerits: ${totalDemerits}, Empathy: ${empathyScore}%`
+        );
       }
 
       return NextResponse.json(
         {
           error: bullyingDetected
-            ? `Reply blocked: ${patternWarning}. Demerits: ${totalPoints}`
+            ? `Reply blocked: ${patternWarning}. Demerits: ${penaltyPoints}`
             : !contextCheck.isAppropriate
             ? `Reply blocked: ${contextCheck.reason}`
-            : `Reply blocked due to ${moderation.reason}. Demerits: ${totalPoints}`,
+            : `Reply blocked due to ${moderation.reason}. Demerits: ${penaltyPoints}`,
           suggestions: contentEnhancement?.alternativePhrasing || [],
           suggestedEdit: contentEnhancement?.suggestedEdit,
         },
@@ -242,7 +227,7 @@ export async function POST(req: NextRequest) {
     // IMPORTANT: Only pass isToxic=false for replies that passed moderation
     // Since we're past the moderation block check, this reply is NOT toxic
     const { calculateNewEmpathyScore } = await import("@/lib/utils-twitter");
-    const currentEmpathyScore = dbUser?.empathyScore ?? 50; // Default to 50 if not set
+    const currentEmpathyScore = dbUser?.empathyScore ?? 100; // Default to 100 if not set
     const newEmpathyScore = calculateNewEmpathyScore(
       currentEmpathyScore,
       empathyAnalysis.score,

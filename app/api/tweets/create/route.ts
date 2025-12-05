@@ -8,6 +8,7 @@ import { Hashtag } from "@/lib/models/Hashtag";
 import { EmpathyLog } from "@/lib/models/EmpathyLog";
 import { BullyingPattern } from "@/lib/models/BullyingPattern";
 import { moderateContent, getSuspensionThreshold } from "@/lib/ai-moderation";
+import { applyEmpathyViolation, ensureEmpathyDefaults } from "@/lib/empathy";
 import {
   analyzeSentiment,
   enhanceContent,
@@ -37,9 +38,10 @@ export async function POST(request: NextRequest) {
     }
     await connectDB();
     const dbUser = await User.findById(user.userId);
+    await ensureEmpathyDefaults(dbUser);
     if (dbUser?.isSuspended) {
       return NextResponse.json(
-        { error: "Your account is suspended" },
+        { error: "Your account is suspended due to low empathy score." },
         { status: 403 }
       );
     }
@@ -79,10 +81,10 @@ export async function POST(request: NextRequest) {
       contentEnhancement = await enhanceContent(content, moderation);
     }
     if (moderation.shouldBlock || bullyingDetected) {
-      const totalPoints = moderation.points + (bullyingDetected ? 10 : 0);
-      await User.updateOne(
-        { _id: dbUser?._id },
-        { $inc: { demeritPoints: totalPoints } }
+      const penaltyPoints = 15;
+      const { empathyScore, totalDemerits, isSuspended } = await applyEmpathyViolation(
+        dbUser!._id.toString(),
+        penaltyPoints
       );
       const tweet = await Tweet.create({
         content,
@@ -98,34 +100,27 @@ export async function POST(request: NextRequest) {
         user: dbUser?._id,
         tweet: tweet._id,
         reason: bullyingDetected ? patternWarning : moderation.reason,
-        points: totalPoints,
+        points: penaltyPoints,
         toxicityScore: moderation.toxicityScore,
         content,
       });
-      const { calculateNewEmpathyScore } = await import("@/lib/utils-twitter");
-      const currentEmpathyScore = dbUser?.empathyScore ?? 50;
-      const newEmpathyScore = calculateNewEmpathyScore(
-        currentEmpathyScore,
-        0.1,
-        true
-      );
-      const finalDemeritPoints = (dbUser?.demeritPoints ?? 0) + totalPoints;
-      const shouldSuspend = newEmpathyScore < 35 || finalDemeritPoints >= getSuspensionThreshold();
-      await User.updateOne(
-        { _id: dbUser?._id },
-        { 
-          empathyScore: newEmpathyScore,
-          isSuspended: shouldSuspend
-        }
-      );
-      if (shouldSuspend) {
-        console.log(`[MODERATION] User ${dbUser?._id} suspended - Demerits: ${finalDemeritPoints}, Empathy: ${newEmpathyScore}%`);
+      if (isSuspended || empathyScore <= 35 || totalDemerits >= getSuspensionThreshold()) {
+        await User.updateOne(
+          { _id: dbUser?._id },
+          {
+            isSuspended: true,
+            suspendedAt: dbUser?.suspendedAt ?? new Date(),
+          }
+        );
+        console.log(
+          `[MODERATION] User ${dbUser?._id} suspended - Demerits: ${totalDemerits}, Empathy: ${empathyScore}%`
+        );
       }
       return NextResponse.json(
         {
           error: bullyingDetected
-            ? `Tweet blocked: ${patternWarning}. Demerits: ${totalPoints}`
-            : `Tweet blocked due to ${moderation.reason}. Demerits: ${totalPoints}`,
+            ? `Tweet blocked: ${patternWarning}. Demerits: ${penaltyPoints}`
+            : `Tweet blocked due to ${moderation.reason}. Demerits: ${penaltyPoints}`,
           suggestions: contentEnhancement?.alternativePhrasing || [],
           suggestedEdit: contentEnhancement?.suggestedEdit,
           warningMessage: contentEnhancement?.warningMessage,
@@ -179,7 +174,7 @@ export async function POST(request: NextRequest) {
       });
     }
     const { calculateNewEmpathyScore } = await import("@/lib/utils-twitter");
-    const currentEmpathyScore = dbUser?.empathyScore ?? 50;
+    const currentEmpathyScore = dbUser?.empathyScore ?? 100;
     const newEmpathyScore = calculateNewEmpathyScore(
       currentEmpathyScore,
       empathyAnalysis.score,

@@ -12,7 +12,9 @@ export interface IUser extends Document {
   isVerified: boolean
   isSuspended: boolean
   demeritPoints: number
+  totalDemerits?: number
   empathyScore: number
+  suspendedAt?: Date
   role: "user" | "admin"
   followers: mongoose.Types.ObjectId[]
   following: mongoose.Types.ObjectId[]
@@ -34,8 +36,10 @@ const userSchema = new Schema<IUser>(
     website: { type: String },
     isVerified: { type: Boolean, default: false },
     isSuspended: { type: Boolean, default: false },
+    suspendedAt: { type: Date },
     demeritPoints: { type: Number, default: 0 },
-    empathyScore: { type: Number, default: 50, min: 0, max: 100 },
+    totalDemerits: { type: Number, default: 0 },
+    empathyScore: { type: Number, default: 100, min: 0, max: 100 },
     role: { type: String, enum: ["user", "admin"], default: "user" },
     followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
     following: [{ type: Schema.Types.ObjectId, ref: "User" }],

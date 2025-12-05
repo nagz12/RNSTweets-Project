@@ -4,6 +4,8 @@ import { connectDB } from "@/lib/db";
 import { EmpathyLog } from "@/lib/models/EmpathyLog";
 import { Demerit } from "@/lib/models/Demerit";
 import { BullyingPattern } from "@/lib/models/BullyingPattern";
+import { User } from "@/lib/models/User";
+import { ensureEmpathyDefaults, normalizeScoreToPercent } from "@/lib/empathy";
 export async function GET(req: NextRequest) {
   try {
     const authHeader = req.headers.get("authorization");
@@ -16,20 +18,26 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
     await connectDB();
+    const userDoc = await User.findById(user.userId);
+    await ensureEmpathyDefaults(userDoc as any);
     const empathyLogs = await EmpathyLog.find({ user: user.userId })
       .sort({ createdAt: -1 })
       .limit(10)
       .lean();
-    const avgEmpathyScore =
+    const avgEmpathyScore = normalizeScoreToPercent(
       empathyLogs.length > 0
         ? empathyLogs.reduce((sum, log: any) => sum + log.empathyScore, 0) /
-          empathyLogs.length
-        : 0;
+            empathyLogs.length
+        : userDoc?.empathyScore ?? 100
+    );
     const demerits = await Demerit.find({ user: user.userId })
       .sort({ createdAt: -1 })
       .limit(5)
       .lean();
-    const totalDemerits = demerits.reduce((sum, d: any) => sum + d.points, 0);
+    const totalDemerits =
+      (userDoc as any)?.totalDemerits ??
+      (userDoc as any)?.demeritPoints ??
+      demerits.reduce((sum, d: any) => sum + d.points, 0);
     const asOffender = await BullyingPattern.find({
       offender: user.userId,
       isResolved: false,
@@ -43,7 +51,7 @@ export async function GET(req: NextRequest) {
       .populate("offender", "username displayName")
       .lean();
     const recommendations = [];
-    if (avgEmpathyScore < 0.4) {
+    if (avgEmpathyScore < 40) {
       recommendations.push({
         type: "empathy",
         message:
@@ -67,7 +75,7 @@ export async function GET(req: NextRequest) {
         priority: "critical",
       });
     }
-    if (avgEmpathyScore >= 0.7 && totalDemerits === 0) {
+    if (avgEmpathyScore >= 70 && totalDemerits === 0) {
       recommendations.push({
         type: "positive",
         message: "Great job maintaining positive and empathetic communication!",
@@ -78,9 +86,15 @@ export async function GET(req: NextRequest) {
       empathyScore: avgEmpathyScore,
       totalDemerits,
       recentDemerits: demerits.length,
+      isSuspended: userDoc?.isSuspended ?? false,
       bullyingPatternsAsOffender: asOffender.length,
       bullyingPatternsAsVictim: asVictim.length,
       recommendations,
+      recentIssues: demerits.map((d: any) => ({
+        reason: d.reason,
+        points: d.points,
+        createdAt: d.createdAt,
+      })),
       detailedPatterns: {
         asOffender: asOffender.map((p: any) => ({
           victim: p.victim?.username,

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { User } from "@/lib/models/User";
 import { verifyToken } from "@/lib/auth";
+import { ensureEmpathyDefaults } from "@/lib/empathy";
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get("authorization");
@@ -23,6 +24,14 @@ export async function POST(request: NextRequest) {
       );
     }
     await connectDB();
+    const currentUser = await User.findById(user.userId);
+    await ensureEmpathyDefaults(currentUser);
+    if (currentUser?.isSuspended) {
+      return NextResponse.json(
+        { error: "Your account is suspended due to low empathy score." },
+        { status: 403 }
+      );
+    }
     const targetUser = await User.findById(targetId);
     if (!targetUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });

@@ -15,8 +15,10 @@ interface WellnessData {
   empathyScore: number;
   totalDemerits: number;
   recentDemerits: number;
+  isSuspended?: boolean;
   bullyingPatternsAsOffender: number;
   bullyingPatternsAsVictim: number;
+  recentIssues?: Array<{ reason: string; points: number; createdAt: string }>;
   recommendations: Array<{
     type: string;
     message: string;
@@ -64,13 +66,13 @@ export default function WellnessPage() {
     }
   };
   const getEmpathyColor = (score: number) => {
-    if (score >= 0.7) return "text-green-600 dark:text-green-400";
-    if (score >= 0.4) return "text-yellow-600 dark:text-yellow-400";
+    if (score >= 70) return "text-green-600 dark:text-green-400";
+    if (score >= 40) return "text-yellow-600 dark:text-yellow-400";
     return "text-red-600 dark:text-red-400";
   };
   const getEmpathyLabel = (score: number) => {
-    if (score >= 0.7) return "Excellent";
-    if (score >= 0.4) return "Good";
+    if (score >= 70) return "Excellent";
+    if (score >= 40) return "Good";
     return "Needs Improvement";
   };
   const getPriorityColor = (priority: string) => {
@@ -168,7 +170,7 @@ export default function WellnessPage() {
                       data.empathyScore
                     )}`}
                   >
-                    {(data.empathyScore * 100).toFixed(0)}%
+                    {data.empathyScore.toFixed(0)}%
                   </span>
                   <span className="text-muted-foreground text-sm">
                     {getEmpathyLabel(data.empathyScore)}
@@ -177,15 +179,20 @@ export default function WellnessPage() {
                 <div className="mt-4 bg-muted rounded-full h-2 overflow-hidden">
                   <div
                     className={`h-full ${
-                      data.empathyScore >= 0.7
+                      data.empathyScore >= 70
                         ? "bg-green-500"
-                        : data.empathyScore >= 0.4
+                        : data.empathyScore >= 40
                         ? "bg-yellow-500"
                         : "bg-red-500"
                     }`}
-                    style={{ width: `${data.empathyScore * 100}%` }}
+                    style={{ width: `${Math.min(100, data.empathyScore)}%` }}
                   />
                 </div>
+                {data.isSuspended && (
+                  <div className="mt-3 bg-destructive/10 border border-destructive/30 text-destructive text-sm rounded-lg p-3">
+                    Your account is suspended due to low empathy score.
+                  </div>
+                )}
               </div>
               {/* Demerit Status */}
               <div className="bg-card border border-border rounded-xl p-6">
@@ -216,6 +223,21 @@ export default function WellnessPage() {
                     </p>
                   </div>
                 </div>
+                {data.recentIssues && data.recentIssues.length > 0 && (
+                  <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+                    {data.recentIssues.map((issue, idx) => (
+                      <li key={idx} className="flex items-center justify-between">
+                        <span>{issue.reason}</span>
+                        <span className="text-destructive font-semibold">+{issue.points}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {data.isSuspended && (
+                  <div className="mt-4 bg-destructive/10 border border-destructive/30 text-destructive text-sm rounded-lg p-3">
+                    Your account is suspended due to low empathy score. Posting and messaging are disabled.
+                  </div>
+                )}
               </div>
               {/* Bullying Patterns */}
               {(data.bullyingPatternsAsOffender > 0 ||

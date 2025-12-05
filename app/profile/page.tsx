@@ -27,6 +27,9 @@ interface User {
   followingCount: number;
   tweetCount: number;
   isFollowing: boolean;
+  empathyScore?: number;
+  totalDemerits?: number;
+  isSuspended?: boolean;
 }
 interface Tweet {
   id: string;
@@ -334,6 +337,38 @@ export default function ProfilePage() {
                 </span>
               </div>
             </div>
+            {/* Empathy & Demerit Snapshot */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+              <div className="bg-card border border-border rounded-lg p-3">
+                <p className="text-xs text-muted-foreground">Empathy Score</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {(user.empathyScore ?? 100).toFixed(0)}%
+                </p>
+              </div>
+              <div className="bg-card border border-border rounded-lg p-3">
+                <p className="text-xs text-muted-foreground">Total Demerits</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {user.totalDemerits ?? 0}
+                </p>
+              </div>
+              <div className="bg-card border border-border rounded-lg p-3">
+                <p className="text-xs text-muted-foreground">Status</p>
+                <p
+                  className={`text-sm font-semibold ${
+                    user.isSuspended
+                      ? "text-destructive"
+                      : "text-green-600 dark:text-green-400"
+                  }`}
+                >
+                  {user.isSuspended ? "Suspended" : "Active"}
+                </p>
+              </div>
+            </div>
+            {user.isSuspended && (
+              <div className="bg-destructive/10 border border-destructive/30 text-destructive text-sm rounded-lg p-3 mb-4">
+                This account is suspended due to low empathy score. Posting and messaging are disabled.
+              </div>
+            )}
           </div>
           {/* Tabs */}
           <div className="border-b border-border sticky top-0 lg:top-0 bg-background/80 backdrop-blur z-10">

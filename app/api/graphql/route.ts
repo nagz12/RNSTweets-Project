@@ -8,6 +8,7 @@ import { Message } from "@/lib/models/Message";
 import { Hashtag } from "@/lib/models/Hashtag";
 import { List } from "@/lib/models/List";
 import { moderateContent, getSuspensionThreshold } from "@/lib/ai-moderation";
+import { applyEmpathyViolation, ensureEmpathyDefaults } from "@/lib/empathy";
 import { generateToken, verifyToken } from "@/lib/auth";
 import { extractHashtags, extractMentions } from "@/lib/utils-twitter";
 import bcryptjs from "bcryptjs";
@@ -24,6 +25,8 @@ const typeDefs = `
     website: String
     isVerified: Boolean!
     isSuspended: Boolean!
+    empathyScore: Int!
+    totalDemerits: Int!
     demeritPoints: Int!
     role: String!
     followerCount: Int!
@@ -595,13 +598,12 @@ const resolvers = {
       if (!context.user) throw new Error("Not authenticated");
       await connectDB();
       const user = await User.findById(context.user.userId);
-      if (user?.isSuspended) throw new Error("Your account is suspended");
+      await ensureEmpathyDefaults(user as any);
+      if (user?.isSuspended) throw new Error("Your account is suspended due to low empathy score.");
       const moderation = await moderateContent(args.content);
       if (moderation.shouldBlock) {
-        await User.updateOne(
-          { _id: user?._id },
-          { $inc: { demeritPoints: moderation.points } }
-        );
+        const penaltyPoints = 15;
+        await applyEmpathyViolation(user!._id.toString(), penaltyPoints);
         const tweet = await Tweet.create({
           content: args.content,
           author: user?._id,
@@ -613,16 +615,20 @@ const resolvers = {
           user: user?._id,
           tweet: tweet._id,
           reason: moderation.reason,
-          points: moderation.points,
+          points: penaltyPoints,
           toxicityScore: moderation.toxicityScore,
           content: args.content,
         });
         const updatedUser = await User.findById(user?._id);
-        if (updatedUser?.demeritPoints! >= getSuspensionThreshold()) {
+        const totalDemerits =
+          (updatedUser as any)?.totalDemerits ??
+          (updatedUser as any)?.demeritPoints ??
+          0;
+        if (totalDemerits >= getSuspensionThreshold() || (updatedUser?.empathyScore ?? 0) <= 35) {
           await User.updateOne({ _id: user?._id }, { isSuspended: true });
         }
         throw new Error(
-          `Tweet blocked due to ${moderation.reason}. Demerits: ${moderation.points}`
+          `Tweet blocked due to ${moderation.reason}. Demerits: ${penaltyPoints}`
         );
       }
       const hashtags = extractHashtags(args.content);
@@ -656,6 +662,9 @@ const resolvers = {
     likeTweet: async (_: any, args: any, context: any) => {
       if (!context.user) throw new Error("Not authenticated");
       await connectDB();
+      const actingUser = await User.findById(context.user.userId);
+      await ensureEmpathyDefaults(actingUser as any);
+      if (actingUser?.isSuspended) throw new Error("Your account is suspended due to low empathy score.");
       const tweet = await Tweet.findById(args.id);
       if (!tweet) throw new Error("Tweet not found");
       if (!tweet.likes.includes(context.user.userId)) {
@@ -682,6 +691,9 @@ const resolvers = {
     retweet: async (_: any, args: any, context: any) => {
       if (!context.user) throw new Error("Not authenticated");
       await connectDB();
+      const actingUser = await User.findById(context.user.userId);
+      await ensureEmpathyDefaults(actingUser as any);
+      if (actingUser?.isSuspended) throw new Error("Your account is suspended due to low empathy score.");
       const tweet = await Tweet.findById(args.id);
       if (!tweet) throw new Error("Tweet not found");
       if (!tweet.retweets.includes(context.user.userId)) {

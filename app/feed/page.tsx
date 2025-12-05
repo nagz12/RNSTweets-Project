@@ -43,6 +43,11 @@ interface Trend {
   postCount: number;
   trendingScore: number;
 }
+interface CurrentUserStatus {
+  empathyScore: number;
+  totalDemerits: number;
+  isSuspended: boolean;
+}
 export default function Feed() {
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [trends, setTrends] = useState<Trend[]>([]);
@@ -53,6 +58,7 @@ export default function Feed() {
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
   const [empathyWarning, setEmpathyWarning] = useState<string | null>(null);
   const [suggestedEdit, setSuggestedEdit] = useState<string | null>(null);
+  const [userStatus, setUserStatus] = useState<CurrentUserStatus | null>(null);
   const router = useRouter();
   useEffect(() => {
     const token = localStorage.getItem("auth-token");
@@ -60,9 +66,32 @@ export default function Feed() {
       router.push("/login");
       return;
     }
+    fetchUserStatus();
     fetchFeed();
     fetchTrends();
   }, [router]);
+  const fetchUserStatus = async () => {
+    try {
+      const token = localStorage.getItem("auth-token");
+      const response = await fetch("/api/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (data.error) {
+        setError(data.error);
+        return;
+      }
+      setUserStatus({
+        empathyScore: data.empathyScore ?? 100,
+        totalDemerits: data.totalDemerits ?? 0,
+        isSuspended: data.isSuspended ?? false,
+      });
+    } catch (err) {
+      console.error("Failed to load user status", err);
+    }
+  };
   const fetchTrends = async () => {
     try {
       const response = await fetch("/api/tweets/trending");
@@ -102,6 +131,10 @@ export default function Feed() {
     }
   };
   const handlePostTweet = async () => {
+    if (userStatus?.isSuspended) {
+      setError("Your account is suspended due to low empathy score.");
+      return;
+    }
     if (!newTweet.trim()) return;
     setPosting(true);
     setError("");
@@ -278,6 +311,7 @@ export default function Feed() {
               <textarea
                 value={newTweet}
                 onChange={(e) => setNewTweet(e.target.value)}
+                disabled={userStatus?.isSuspended}
                 placeholder="What's happening?!"
                 className="w-full bg-input border border-border rounded-lg px-4 py-3 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none text-base md:text-lg"
                 rows={3}
@@ -332,12 +366,17 @@ export default function Feed() {
                 </span>
                 <button
                   onClick={handlePostTweet}
-                  disabled={posting || !newTweet.trim()}
+                  disabled={posting || !newTweet.trim() || userStatus?.isSuspended}
                   className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:opacity-90 transition-opacity font-medium disabled:opacity-50 text-sm md:text-base"
                 >
                   {posting ? "Posting..." : "Post"}
                 </button>
               </div>
+              {userStatus?.isSuspended && (
+                <div className="bg-destructive/10 border border-destructive/30 text-destructive text-sm rounded-lg p-3">
+                  Your account is suspended due to low empathy score. Posting is disabled.
+                </div>
+              )}
             </div>
           </div>
           {/* Tweets Feed */}
