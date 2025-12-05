@@ -126,13 +126,20 @@ const userSchema = new __TURBOPACK__imported__module__$5b$externals$5d2f$mongoos
         type: Boolean,
         default: false
     },
+    suspendedAt: {
+        type: Date
+    },
     demeritPoints: {
+        type: Number,
+        default: 0
+    },
+    totalDemerits: {
         type: Number,
         default: 0
     },
     empathyScore: {
         type: Number,
-        default: 50,
+        default: 100,
         min: 0,
         max: 100
     },
@@ -311,7 +318,11 @@ async function POST(request) {
             password: hashedPassword,
             username,
             displayName,
-            isVerified: true
+            isVerified: true,
+            empathyScore: 100,
+            totalDemerits: 0,
+            demeritPoints: 0,
+            isSuspended: false
         });
         const token = (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$lib$2f$auth$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["generateToken"])({
             userId: newUser._id.toString(),

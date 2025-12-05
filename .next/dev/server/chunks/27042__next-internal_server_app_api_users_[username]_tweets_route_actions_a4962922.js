@@ -1,0 +1,7 @@
+module.exports = [
+"[project]/OneDrive/Desktop/rnst-weets-social-platform/.next-internal/server/app/api/users/[username]/tweets/route/actions.js [app-rsc] (server actions loader, ecmascript)", ((__turbopack_context__, module, exports) => {
+
+}),
+];
+
+//# sourceMappingURL=27042__next-internal_server_app_api_users_%5Busername%5D_tweets_route_actions_a4962922.js.map

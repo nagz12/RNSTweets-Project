@@ -413,18 +413,18 @@ async function GET(request) {
         const validTweets = tweets.filter((t)=>t.author && !t.author.isSuspended);
         const formattedTweets = validTweets.map((t)=>({
                 ...t,
-                id: t._id,
+                id: t._id?.toString?.() || String(t._id),
                 author: {
                     ...t.author,
-                    id: t.author._id
+                    id: t.author?._id?.toString?.() || String(t.author?._id)
                 },
-                likes: t.likes.length,
-                retweets: t.retweets.length,
-                replies: t.replies.length,
-                isLiked: t.likes.some((l)=>l.toString() === user.userId),
-                isRetweeted: t.retweets.some((r)=>r.toString() === user.userId),
-                isFlagged: t.isFlagged || false,
-                isDeleted: t.isDeleted || false
+                likes: Array.isArray(t.likes) ? t.likes.length : t.likes || 0,
+                retweets: Array.isArray(t.retweets) ? t.retweets.length : t.retweets || 0,
+                replies: Array.isArray(t.replies) ? t.replies.length : t.replies || 0,
+                isLiked: Array.isArray(t.likes) ? t.likes.some((l)=>l.toString() === user.userId) : false,
+                isRetweeted: Array.isArray(t.retweets) ? t.retweets.some((r)=>r.toString() === user.userId) : false,
+                isFlagged: !!t.isFlagged,
+                isDeleted: !!t.isDeleted
             }));
         return __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             tweets: formattedTweets

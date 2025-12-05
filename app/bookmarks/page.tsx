@@ -58,6 +58,20 @@ export default function BookmarksPage() {
       setLoading(false);
     }
   };
+  const handleRemoveBookmark = async (tweetId: string) => {
+    try {
+      const token = localStorage.getItem("auth-token");
+      const res = await fetch(`/api/bookmarks/${tweetId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        setBookmarks((prev) => prev.filter((b) => b.tweet.id !== tweetId));
+      }
+    } catch (err) {
+      console.error("Failed to remove bookmark", err);
+    }
+  };
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const today = new Date();
@@ -158,9 +172,12 @@ export default function BookmarksPage() {
                       <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 rounded-full flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2 flex-wrap gap-1">
-                          <span className="font-bold text-foreground truncate">
+                          <Link
+                            href={`/profile/${tweet.author.username}`}
+                            className="font-bold text-foreground truncate hover:underline"
+                          >
                             {tweet.author.displayName}
-                          </span>
+                          </Link>
                           <span className="text-muted-foreground text-sm truncate">
                             @{tweet.author.username}
                           </span>
@@ -168,6 +185,16 @@ export default function BookmarksPage() {
                           <span className="text-muted-foreground text-sm">
                             {formatDate(tweet.createdAt)}
                           </span>
+                          <button
+                            onClick={() => {
+                              if (confirm("Remove this bookmark?")) {
+                                handleRemoveBookmark(tweet.id);
+                              }
+                            }}
+                            className="text-xs text-muted-foreground hover:text-destructive ml-2"
+                          >
+                            Remove
+                          </button>
                         </div>
                         <p className="text-foreground mt-2 break-words text-sm md:text-base">
                           {tweet.content}

@@ -133,6 +133,7 @@ function TweetDetailContent() {
     const [posting, setPosting] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
     const [aiSuggestions, setAiSuggestions] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [userStatus, setUserStatus] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "TweetDetailContent.useEffect": ()=>{
             const token = localStorage.getItem("auth-token");
@@ -140,12 +141,33 @@ function TweetDetailContent() {
                 router.push("/login");
                 return;
             }
+            fetchUserStatus();
             if (!tweetId) {
                 setLoading(false);
                 setError("Tweet ID is missing.");
                 return;
             }
             fetchTweetDetails();
+            async function fetchUserStatus() {
+                try {
+                    const token = localStorage.getItem("auth-token");
+                    const res = await fetch("/api/users/me", {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+                    const data = await res.json();
+                    if (!data.error) {
+                        setUserStatus({
+                            id: data.id,
+                            isSuspended: data.isSuspended ?? false,
+                            empathyScore: data.empathyScore ?? 100
+                        });
+                    }
+                } catch (err) {
+                    console.error("Failed to load user status", err);
+                }
+            }
             async function fetchTweetDetails() {
                 try {
                     const token = localStorage.getItem("auth-token");
@@ -182,6 +204,10 @@ function TweetDetailContent() {
         router
     ]);
     const handlePostReply = async ()=>{
+        if (userStatus?.isSuspended) {
+            setError("Your account is suspended due to low empathy score.");
+            return;
+        }
         if (!replyText.trim()) return;
         setPosting(true);
         setError("");
@@ -282,6 +308,27 @@ function TweetDetailContent() {
             console.error("Error retweeting:", err);
         }
     };
+    const handleDeleteTweet = async (id, isReply)=>{
+        try {
+            const token = localStorage.getItem("auth-token");
+            const endpoint = isReply ? `/api/replies/${id}` : `/api/tweets/${id}`;
+            const res = await fetch(endpoint, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            if (res.ok) {
+                if (isReply) {
+                    setReplies((prev)=>prev.filter((r)=>r.id !== id));
+                } else {
+                    setTweet(null);
+                }
+            }
+        } catch (err) {
+            console.error("Delete failed", err);
+        }
+    };
     const formatDate = (dateString)=>{
         const date = new Date(dateString);
         return date.toLocaleString("en-US", {
@@ -307,12 +354,12 @@ function TweetDetailContent() {
                                 size: 24
                             }, void 0, false, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                lineNumber: 208,
+                                lineNumber: 252,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                            lineNumber: 204,
+                            lineNumber: 248,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -320,18 +367,18 @@ function TweetDetailContent() {
                             children: "Tweet"
                         }, void 0, false, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                            lineNumber: 210,
+                            lineNumber: 254,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$components$2f$theme$2d$switcher$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ThemeSwitcher"], {}, void 0, false, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                            lineNumber: 211,
+                            lineNumber: 255,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                    lineNumber: 203,
+                    lineNumber: 247,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -341,14 +388,14 @@ function TweetDetailContent() {
                         children: "Loading tweet..."
                     }, void 0, false, {
                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                        lineNumber: 215,
+                        lineNumber: 259,
                         columnNumber: 13
                     }, this) : !tweet ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "p-8 text-center text-muted-foreground",
                         children: "Tweet not found"
                     }, void 0, false, {
                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                        lineNumber: 219,
+                        lineNumber: 263,
                         columnNumber: 13
                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
                         children: [
@@ -356,47 +403,69 @@ function TweetDetailContent() {
                                 className: "border-b border-border p-6 bg-card",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "flex items-center gap-3 mb-4",
+                                        className: "flex items-center justify-between gap-3 mb-4",
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "w-12 h-12 bg-primary/10 rounded-full flex-shrink-0"
-                                            }, void 0, false, {
-                                                fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                lineNumber: 226,
-                                                columnNumber: 19
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "flex items-center gap-3",
                                                 children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
-                                                        href: `/profile?username=${tweet.author.username}`,
-                                                        className: "font-bold text-foreground hover:underline",
-                                                        children: tweet.author.displayName
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        className: "w-12 h-12 bg-primary/10 rounded-full flex-shrink-0"
                                                     }, void 0, false, {
                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                        lineNumber: 228,
+                                                        lineNumber: 271,
                                                         columnNumber: 21
                                                     }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                        className: "text-muted-foreground text-sm",
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         children: [
-                                                            "@",
-                                                            tweet.author.username
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                                                                href: `/profile/${tweet.author.username}`,
+                                                                className: "font-bold text-foreground hover:underline",
+                                                                children: tweet.author.displayName
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
+                                                                lineNumber: 273,
+                                                                columnNumber: 23
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                className: "text-muted-foreground text-sm",
+                                                                children: [
+                                                                    "@",
+                                                                    tweet.author.username
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
+                                                                lineNumber: 279,
+                                                                columnNumber: 23
+                                                            }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                        lineNumber: 234,
+                                                        lineNumber: 272,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                lineNumber: 227,
+                                                lineNumber: 270,
                                                 columnNumber: 19
+                                            }, this),
+                                            userStatus?.id === tweet.author.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                onClick: ()=>{
+                                                    if (confirm("Delete this Tweet? This action cannot be undone.")) {
+                                                        handleDeleteTweet(tweet.id, false);
+                                                    }
+                                                },
+                                                className: "text-muted-foreground hover:text-destructive text-sm",
+                                                children: "Delete"
+                                            }, void 0, false, {
+                                                fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
+                                                lineNumber: 285,
+                                                columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                        lineNumber: 225,
+                                        lineNumber: 269,
                                         columnNumber: 17
                                     }, this),
                                     tweet.isFlagged || tweet.isDeleted ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -406,19 +475,19 @@ function TweetDetailContent() {
                                             children: "This content was removed for policy reasons"
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                            lineNumber: 241,
+                                            lineNumber: 299,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                        lineNumber: 240,
+                                        lineNumber: 298,
                                         columnNumber: 19
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-foreground text-xl mb-4",
                                         children: tweet.content
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                        lineNumber: 246,
+                                        lineNumber: 304,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -426,7 +495,7 @@ function TweetDetailContent() {
                                         children: formatDate(tweet.createdAt)
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                        lineNumber: 248,
+                                        lineNumber: 306,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -439,7 +508,7 @@ function TweetDetailContent() {
                                                         children: tweet.retweets
                                                     }, void 0, false, {
                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                        lineNumber: 253,
+                                                        lineNumber: 311,
                                                         columnNumber: 21
                                                     }, this),
                                                     " ",
@@ -447,7 +516,7 @@ function TweetDetailContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                lineNumber: 252,
+                                                lineNumber: 310,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -457,7 +526,7 @@ function TweetDetailContent() {
                                                         children: tweet.likes
                                                     }, void 0, false, {
                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                        lineNumber: 259,
+                                                        lineNumber: 317,
                                                         columnNumber: 21
                                                     }, this),
                                                     " ",
@@ -465,7 +534,7 @@ function TweetDetailContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                lineNumber: 258,
+                                                lineNumber: 316,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -475,7 +544,7 @@ function TweetDetailContent() {
                                                         children: tweet.replies
                                                     }, void 0, false, {
                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                        lineNumber: 263,
+                                                        lineNumber: 321,
                                                         columnNumber: 21
                                                     }, this),
                                                     " ",
@@ -483,13 +552,13 @@ function TweetDetailContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                lineNumber: 262,
+                                                lineNumber: 320,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                        lineNumber: 251,
+                                        lineNumber: 309,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -501,12 +570,12 @@ function TweetDetailContent() {
                                                     size: 20
                                                 }, void 0, false, {
                                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                    lineNumber: 269,
+                                                    lineNumber: 327,
                                                     columnNumber: 21
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                lineNumber: 268,
+                                                lineNumber: 326,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -516,12 +585,12 @@ function TweetDetailContent() {
                                                     size: 20
                                                 }, void 0, false, {
                                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                    lineNumber: 277,
+                                                    lineNumber: 335,
                                                     columnNumber: 21
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                lineNumber: 271,
+                                                lineNumber: 329,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -532,12 +601,12 @@ function TweetDetailContent() {
                                                     fill: tweet.isLiked ? "currentColor" : "none"
                                                 }, void 0, false, {
                                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                    lineNumber: 287,
+                                                    lineNumber: 345,
                                                     columnNumber: 21
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                lineNumber: 279,
+                                                lineNumber: 337,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -546,24 +615,24 @@ function TweetDetailContent() {
                                                     size: 20
                                                 }, void 0, false, {
                                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                    lineNumber: 293,
+                                                    lineNumber: 351,
                                                     columnNumber: 21
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                lineNumber: 292,
+                                                lineNumber: 350,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                        lineNumber: 267,
+                                        lineNumber: 325,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                lineNumber: 224,
+                                lineNumber: 268,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -572,13 +641,14 @@ function TweetDetailContent() {
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
                                         value: replyText,
                                         onChange: (e)=>setReplyText(e.target.value),
+                                        disabled: userStatus?.isSuspended,
                                         placeholder: "Tweet your reply",
                                         className: "w-full bg-input border border-border rounded-lg px-4 py-3 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none",
                                         rows: 3,
                                         maxLength: 280
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                        lineNumber: 298,
+                                        lineNumber: 356,
                                         columnNumber: 17
                                     }, this),
                                     error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -586,7 +656,7 @@ function TweetDetailContent() {
                                         children: error
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                        lineNumber: 307,
+                                        lineNumber: 366,
                                         columnNumber: 19
                                     }, this),
                                     aiSuggestions.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -597,7 +667,7 @@ function TweetDetailContent() {
                                                 children: "💡 AI Suggestions:"
                                             }, void 0, false, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                lineNumber: 313,
+                                                lineNumber: 372,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -611,18 +681,18 @@ function TweetDetailContent() {
                                                         ]
                                                     }, idx, true, {
                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                        lineNumber: 318,
+                                                        lineNumber: 377,
                                                         columnNumber: 25
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                lineNumber: 316,
+                                                lineNumber: 375,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                        lineNumber: 312,
+                                        lineNumber: 371,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -636,12 +706,12 @@ function TweetDetailContent() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                lineNumber: 330,
+                                                lineNumber: 389,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                 onClick: handlePostReply,
-                                                disabled: posting || !replyText.trim(),
+                                                disabled: posting || !replyText.trim() || userStatus?.isSuspended,
                                                 className: "bg-primary text-primary-foreground px-6 py-2 rounded-full hover:opacity-90 transition-opacity font-medium disabled:opacity-50 flex items-center gap-2",
                                                 children: [
                                                     posting ? "Posting..." : "Reply",
@@ -649,25 +719,33 @@ function TweetDetailContent() {
                                                         size: 16
                                                     }, void 0, false, {
                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                        lineNumber: 339,
+                                                        lineNumber: 398,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                lineNumber: 333,
+                                                lineNumber: 392,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                        lineNumber: 329,
+                                        lineNumber: 388,
                                         columnNumber: 17
+                                    }, this),
+                                    userStatus?.isSuspended && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "mt-3 bg-destructive/10 border border-destructive/30 text-destructive text-sm rounded-lg p-3",
+                                        children: "Your account is suspended due to low empathy score. Replying is disabled."
+                                    }, void 0, false, {
+                                        fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
+                                        lineNumber: 402,
+                                        columnNumber: 19
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                lineNumber: 297,
+                                lineNumber: 355,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -676,7 +754,7 @@ function TweetDetailContent() {
                                     children: "No replies yet. Be the first to reply!"
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                    lineNumber: 345,
+                                    lineNumber: 409,
                                     columnNumber: 19
                                 }, this) : replies.map((reply)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "border-b border-border p-4 hover:bg-muted/50 transition-colors",
@@ -687,7 +765,7 @@ function TweetDetailContent() {
                                                     className: "w-10 h-10 bg-primary/10 rounded-full flex-shrink-0"
                                                 }, void 0, false, {
                                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                    lineNumber: 355,
+                                                    lineNumber: 419,
                                                     columnNumber: 25
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -697,12 +775,12 @@ function TweetDetailContent() {
                                                             className: "flex items-center gap-2 flex-wrap",
                                                             children: [
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
-                                                                    href: `/profile?username=${reply.author.username}`,
+                                                                    href: `/profile/${reply.author.username}`,
                                                                     className: "font-bold text-foreground hover:underline truncate",
                                                                     children: reply.author.displayName
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                                    lineNumber: 358,
+                                                                    lineNumber: 422,
                                                                     columnNumber: 29
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -713,13 +791,26 @@ function TweetDetailContent() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                                    lineNumber: 364,
+                                                                    lineNumber: 428,
                                                                     columnNumber: 29
+                                                                }, this),
+                                                                userStatus?.id === reply.author.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                    onClick: ()=>{
+                                                                        if (confirm("Delete this reply? This action cannot be undone.")) {
+                                                                            handleDeleteTweet(reply.id, true);
+                                                                        }
+                                                                    },
+                                                                    className: "text-muted-foreground hover:text-destructive text-xs ml-2",
+                                                                    children: "Delete"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
+                                                                    lineNumber: 432,
+                                                                    columnNumber: 31
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                            lineNumber: 357,
+                                                            lineNumber: 421,
                                                             columnNumber: 27
                                                         }, this),
                                                         reply.isFlagged || reply.isDeleted ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -729,19 +820,19 @@ function TweetDetailContent() {
                                                                 children: "This content was removed for policy reasons"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                                lineNumber: 370,
+                                                                lineNumber: 448,
                                                                 columnNumber: 31
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                            lineNumber: 369,
+                                                            lineNumber: 447,
                                                             columnNumber: 29
                                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                             className: "text-foreground mt-2 break-words",
                                                             children: reply.content
                                                         }, void 0, false, {
                                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                            lineNumber: 375,
+                                                            lineNumber: 453,
                                                             columnNumber: 29
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -756,20 +847,20 @@ function TweetDetailContent() {
                                                                             fill: reply.isLiked ? "currentColor" : "none"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                                            lineNumber: 388,
+                                                                            lineNumber: 466,
                                                                             columnNumber: 31
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                             children: reply.likes
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                                            lineNumber: 392,
+                                                                            lineNumber: 470,
                                                                             columnNumber: 31
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                                    lineNumber: 380,
+                                                                    lineNumber: 458,
                                                                     columnNumber: 29
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -780,70 +871,70 @@ function TweetDetailContent() {
                                                                             size: 16
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                                            lineNumber: 402,
+                                                                            lineNumber: 480,
                                                                             columnNumber: 31
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                             children: reply.retweets
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                                            lineNumber: 403,
+                                                                            lineNumber: 481,
                                                                             columnNumber: 31
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                                    lineNumber: 394,
+                                                                    lineNumber: 472,
                                                                     columnNumber: 29
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                            lineNumber: 379,
+                                                            lineNumber: 457,
                                                             columnNumber: 27
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                                    lineNumber: 356,
+                                                    lineNumber: 420,
                                                     columnNumber: 25
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                            lineNumber: 354,
+                                            lineNumber: 418,
                                             columnNumber: 23
                                         }, this)
                                     }, reply.id, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                        lineNumber: 350,
+                                        lineNumber: 414,
                                         columnNumber: 21
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                                lineNumber: 343,
+                                lineNumber: 407,
                                 columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true)
                 }, void 0, false, {
                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-                    lineNumber: 213,
+                    lineNumber: 257,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-            lineNumber: 202,
+            lineNumber: 246,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/components/tweet/tweet-detail-content.tsx",
-        lineNumber: 201,
+        lineNumber: 245,
         columnNumber: 5
     }, this);
 }
-_s(TweetDetailContent, "idMoXtnaRXQxO3q25RF0qaKwj2s=", false, function() {
+_s(TweetDetailContent, "OlXjW8Ej8NCeVPbsHP/owmx30s4=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"],
         __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useSearchParams"]

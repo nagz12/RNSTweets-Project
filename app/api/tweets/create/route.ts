@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
     }
     const empathyAnalysis = await generateEmpathyScore(content);
     let empathyWarning = null;
-    if (empathyAnalysis.score < 0.3 && moderation.toxicityScore > 0.2) {
+    if (empathyAnalysis.score < 30 && moderation.toxicityScore > 0.2) {
       empathyWarning = {
         message:
           "Your post may come across as insensitive. Consider rephrasing.",
@@ -166,10 +166,11 @@ export async function POST(request: NextRequest) {
       .populate("author")
       .lean()) as any;
     if (empathyAnalysis.score > 0) {
+      // Note: EmpathyLog stores normalized 0-1 range for historical compatibility
       await EmpathyLog.create({
         user: dbUser?._id,
         tweet: tweet._id,
-        empathyScore: empathyAnalysis.score,
+        empathyScore: empathyAnalysis.score / 100, // Convert to 0-1 for logging
         suggestions: empathyAnalysis.suggestions,
       });
     }

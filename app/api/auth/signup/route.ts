@@ -35,6 +35,10 @@ export async function POST(request: NextRequest) {
       username,
       displayName,
       isVerified: true,
+      empathyScore: 100,
+      totalDemerits: 0,
+      demeritPoints: 0,
+      isSuspended: false,
     });
     const token = generateToken({
       userId: newUser._id.toString(),

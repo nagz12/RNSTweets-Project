@@ -366,7 +366,7 @@ export async function generateEmpathyScore(
   content: string
 ): Promise<{ score: number; suggestions: string[] }> {
   if (!OPENROUTER_API_KEY) {
-    return { score: 0.5, suggestions: [] };
+    return { score: 50, suggestions: [] }; // Return 0-100 range, not 0-1
   }
   try {
     const response = await fetch(OPENROUTER_API_URL, {
@@ -398,12 +398,14 @@ Post: "${content}"`,
     const aiResponse = data?.choices?.[0]?.message?.content;
     const jsonMatch = aiResponse?.match(/\{[\s\S]*\}/);
     const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : aiResponse);
+    // Convert AI score from 0-1 range to 0-100 range (e.g., 0.21 becomes 21, 0.85 becomes 85)
+    const score0to100 = Math.max(0, Math.min(100, Math.round((parsed.score ?? 0.5) * 100)));
     return {
-      score: parsed.score || 0.5,
+      score: score0to100,
       suggestions: parsed.suggestions || [],
     };
   } catch (error) {
     console.error("Empathy score error:", error);
-    return { score: 0.5, suggestions: [] };
+    return { score: 50, suggestions: [] }; // Return 0-100 range on error
   }
 }

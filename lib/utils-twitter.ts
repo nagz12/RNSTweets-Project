@@ -33,22 +33,23 @@ export function truncateText(text: string, length = 100): string {
 
 export function calculateNewEmpathyScore(
   currentScore: number,
-  empathyScore: number,
+  tweetEmpathyScore: number,  // Now 0-100 range (was 0-1)
   isToxic: boolean = false
 ): number {
   let newScore = currentScore;
 
-  if (isToxic || empathyScore < 0.3) {
-    const decreaseAmount = isToxic ? 8 : Math.max(2, Math.round((0.3 - empathyScore) * 10));
+  // Both currentScore and tweetEmpathyScore are now in 0-100 range
+  if (isToxic || tweetEmpathyScore < 30) {
+    const decreaseAmount = isToxic ? 8 : Math.max(2, Math.round((30 - tweetEmpathyScore) / 10));
     newScore = Math.max(0, currentScore - decreaseAmount);
-  } else if (empathyScore >= 0.7) {
-    const increaseAmount = Math.round(3 + (empathyScore - 0.7) * 6);
+  } else if (tweetEmpathyScore >= 70) {
+    const increaseAmount = Math.round(3 + (tweetEmpathyScore - 70) / 10);
     newScore = Math.min(100, currentScore + increaseAmount);
-  } else if (empathyScore >= 0.5) {
-    const increaseAmount = Math.round(1 + (empathyScore - 0.5) * 5);
+  } else if (tweetEmpathyScore >= 50) {
+    const increaseAmount = Math.round(1 + (tweetEmpathyScore - 50) / 10);
     newScore = Math.min(100, currentScore + increaseAmount);
   } else {
-    const decreaseAmount = Math.round((0.5 - empathyScore) * 2);
+    const decreaseAmount = Math.round((50 - tweetEmpathyScore) / 25);
     newScore = Math.max(0, currentScore - decreaseAmount);
   }
 

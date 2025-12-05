@@ -44,6 +44,7 @@ interface Trend {
   trendingScore: number;
 }
 interface CurrentUserStatus {
+  id?: string;
   empathyScore: number;
   totalDemerits: number;
   isSuspended: boolean;
@@ -84,12 +85,82 @@ export default function Feed() {
         return;
       }
       setUserStatus({
+        id: data.id,
         empathyScore: data.empathyScore ?? 100,
         totalDemerits: data.totalDemerits ?? 0,
         isSuspended: data.isSuspended ?? false,
       });
     } catch (err) {
       console.error("Failed to load user status", err);
+    }
+  };
+  
+
+  // Improved delete with optimistic UI and error handling
+  const deleteTweet = async (tweetId: string | undefined, tweetObj?: Tweet): Promise<boolean> => {
+    const token = localStorage.getItem("auth-token");
+    if (!token) {
+      router.push("/login");
+      return false;
+    }
+
+    // Optimistic update: remove tweet from UI immediately
+    const previousTweets = tweets;
+    setTweets((prev) => prev.filter((t) => t.id !== tweetId));
+
+    try {
+      // Normalize and log the outgoing id to help diagnose 404s
+      let idStr = "";
+      try {
+        if (tweetId == null) idStr = String(tweetId);
+        else if (typeof tweetId === "string") idStr = tweetId;
+        else if (typeof tweetId === "object") {
+          // attempt common fields
+          // @ts-ignore
+          idStr = tweetId.id || tweetId._id || tweetId.tweetId || JSON.stringify(tweetId);
+        } else {
+          idStr = String(tweetId);
+        }
+      } catch (e) {
+        idStr = String(tweetId);
+      }
+
+      console.log("[CLIENT-DELETE] deleting tweet id", idStr, "(original:", tweetId, ")");
+
+      // Defensive: if idStr is invalid, log the whole tweet object and abort
+      if (!idStr || idStr === "undefined" || idStr === "null") {
+        console.error("[CLIENT-DELETE] Aborting delete: invalid idStr", { idStr, tweetObj, tweetId, previousTweets });
+        // Rollback optimistic update
+        setTweets(previousTweets);
+        alert("Cannot delete: tweet id is invalid. See console for details.");
+        return false;
+      }
+
+      const encodedId = encodeURIComponent(idStr);
+      const res = await fetch(`/api/tweets/${encodedId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok) {
+        return true;
+      }
+
+      const text = await res.text();
+      console.error("Failed to delete tweet", res.status, text);
+      // Rollback optimistic update
+      setTweets(previousTweets);
+      // Show user-visible error
+      alert(
+        `Failed to delete tweet: ${text || `status ${res.status}`}`
+      );
+      if (res.status === 401) router.push("/login");
+      return false;
+    } catch (err) {
+      console.error("Delete failed", err);
+      setTweets(previousTweets);
+      alert("Failed to delete tweet. Check console for details.");
+      return false;
     }
   };
   const fetchTrends = async () => {
@@ -396,19 +467,29 @@ export default function Feed() {
                   className="border-b border-border p-4 hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex space-x-4">
-                    <Link
-                      href={`/profile?username=${tweet.author.username}`}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/profile/${tweet.author.username}`);
+                      }}
+                      aria-label={`Open profile ${tweet.author.username}`}
                       className="w-12 h-12 bg-primary/10 rounded-full flex-shrink-0 hover:opacity-80 transition-opacity"
                     />
                     <div className="flex-1 min-w-0">
-                      <Link
-                        href={`/tweet?id=${tweet.id}`}
+                      <div
+                        onClick={() => router.push(`/tweet?id=${tweet.id}`)}
                         className="block cursor-pointer"
                       >
                         <div className="flex items-center space-x-2 flex-wrap">
-                          <span className="font-bold text-foreground hover:underline">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(`/profile/${tweet.author.username}`);
+                            }}
+                            className="font-bold text-foreground hover:underline"
+                          >
                             {tweet.author.displayName}
-                          </span>
+                          </button>
                           <span className="text-muted-foreground truncate">
                             @{tweet.author.username}
                           </span>
@@ -416,6 +497,18 @@ export default function Feed() {
                           <span className="text-muted-foreground text-sm">
                             {formatDate(tweet.createdAt)}
                           </span>
+                          {userStatus?.id === tweet.author.id && (
+                            <button
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                if (!confirm("Delete this Tweet? This action cannot be undone.")) return;
+                                await deleteTweet(tweet.id, tweet);
+                              }}
+                              className="text-muted-foreground hover:text-destructive text-xs ml-2"
+                            >
+                              Delete
+                            </button>
+                          )}
                         </div>
                         {(tweet.isFlagged || tweet.isDeleted) ? (
                           <div className="mt-2 p-3 bg-muted/50 border border-border rounded-lg">
@@ -431,19 +524,25 @@ export default function Feed() {
                         <div className="text-xs text-muted-foreground mt-2">
                           {tweet.viewCount} views
                         </div>
-                      </Link>
+                      </div>
                       <div className="flex justify-around mt-3 text-muted-foreground max-w-xs text-sm md:text-base">
-                        <Link
-                          href={`/tweet?id=${tweet.id}`}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/tweet?id=${tweet.id}`);
+                          }}
                           className="flex items-center space-x-2 hover:text-primary transition-colors group flex-1 justify-center"
                         >
                           <div className="group-hover:bg-primary/10 rounded-full p-2">
                             <MessageCircle size={16} />
                           </div>
                           <span className="text-xs">{tweet.replies}</span>
-                        </Link>
+                        </button>
                         <button
-                          onClick={() => handleRetweetTweet(tweet.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRetweetTweet(tweet.id);
+                          }}
                           className={`flex items-center space-x-2 transition-colors group flex-1 justify-center ${
                             tweet.isRetweeted
                               ? "text-primary"
@@ -456,7 +555,10 @@ export default function Feed() {
                           <span className="text-xs">{tweet.retweets}</span>
                         </button>
                         <button
-                          onClick={() => handleLikeTweet(tweet.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleLikeTweet(tweet.id);
+                          }}
                           className={`flex items-center space-x-2 transition-colors group flex-1 justify-center ${
                             tweet.isLiked
                               ? "text-destructive"
@@ -471,7 +573,10 @@ export default function Feed() {
                           </div>
                           <span className="text-xs">{tweet.likes}</span>
                         </button>
-                        <button className="flex items-center space-x-2 hover:text-primary transition-colors group flex-1 justify-center">
+                        <button
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center space-x-2 hover:text-primary transition-colors group flex-1 justify-center"
+                        >
                           <div className="group-hover:bg-primary/10 rounded-full p-2">
                             <Share size={16} />
                           </div>

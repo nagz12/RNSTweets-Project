@@ -249,7 +249,6 @@ const resolvers = {
       });
       return {
         ...user,
-        id: user._id,
         followerCount: user.followers.length,
         followingCount: user.following.length,
         tweetCount,
@@ -271,15 +270,15 @@ const resolvers = {
         .lean();
       return tweets.map((t: any) => ({
         ...t,
-        id: t._id,
-        author: { ...t.author, id: t.author._id },
-        likes: t.likes.length,
-        retweets: t.retweets.length,
-        replies: t.replies.length,
-        isLiked: t.likes.some((l: any) => l.toString() === context.user.userId),
-        isRetweeted: t.retweets.some(
+        id: t._id?.toString?.() || String(t._id),
+        author: { ...t.author, id: t.author?._id?.toString?.() || String(t.author?._id) },
+        likes: Array.isArray(t.likes) ? t.likes.length : (t.likes || 0),
+        retweets: Array.isArray(t.retweets) ? t.retweets.length : (t.retweets || 0),
+        replies: Array.isArray(t.replies) ? t.replies.length : (t.replies || 0),
+        isLiked: Array.isArray(t.likes) ? t.likes.some((l: any) => l.toString() === context.user.userId) : false,
+        isRetweeted: Array.isArray(t.retweets) ? t.retweets.some(
           (r: any) => r.toString() === context.user.userId
-        ),
+        ) : false,
       }));
     },
     explore: async (_: any, __: any, context: any) => {

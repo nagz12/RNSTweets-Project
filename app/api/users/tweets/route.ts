@@ -27,13 +27,13 @@ export async function GET(request: NextRequest) {
     const validTweets = tweets.filter((t: any) => t.author && !t.author.isSuspended);
     const formattedTweets = validTweets.map((t: any) => ({
       ...t,
-      id: t._id,
-      author: { ...t.author, id: t.author._id },
-      likes: t.likes.length,
-      retweets: t.retweets.length,
-      replies: t.replies.length,
-      isFlagged: t.isFlagged || false,
-      isDeleted: t.isDeleted || false,
+      id: t._id?.toString?.() || String(t._id),
+      author: { ...t.author, id: t.author?._id?.toString?.() || String(t.author?._id) },
+      likes: Array.isArray(t.likes) ? t.likes.length : (t.likes || 0),
+      retweets: Array.isArray(t.retweets) ? t.retweets.length : (t.retweets || 0),
+      replies: Array.isArray(t.replies) ? t.replies.length : (t.replies || 0),
+      isFlagged: !!t.isFlagged,
+      isDeleted: !!t.isDeleted,
     }));
     return NextResponse.json({ tweets: formattedTweets });
   } catch (error: any) {

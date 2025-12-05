@@ -45,7 +45,7 @@ export function TweetDetailContent() {
   const [posting, setPosting] = useState(false);
   const [error, setError] = useState("");
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
-  const [userStatus, setUserStatus] = useState<{ isSuspended: boolean; empathyScore: number } | null>(null);
+  const [userStatus, setUserStatus] = useState<{ isSuspended: boolean; empathyScore: number; id?: string } | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("auth-token");
@@ -69,6 +69,7 @@ export function TweetDetailContent() {
         const data = await res.json();
         if (!data.error) {
           setUserStatus({
+            id: data.id,
             isSuspended: data.isSuspended ?? false,
             empathyScore: data.empathyScore ?? 100,
           });
@@ -209,6 +210,48 @@ export function TweetDetailContent() {
     }
   };
 
+  const handleDeleteTweet = async (id: string, isReply: boolean) => {
+    try {
+      const token = localStorage.getItem("auth-token");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      let idStr = "";
+      try {
+        idStr = id == null ? String(id) : String(id);
+      } catch (e) {
+        idStr = String(id);
+      }
+      if (!idStr || idStr === "undefined" || idStr === "null") {
+        console.error("[DETAIL-DELETE] invalid id", { id });
+        alert("Cannot delete: invalid id. See console for details.");
+        return;
+      }
+
+      const endpoint = isReply ? `/api/replies/${encodeURIComponent(idStr)}` : `/api/tweets/${encodeURIComponent(idStr)}`;
+      const res = await fetch(endpoint, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        if (isReply) {
+          setReplies((prev) => prev.filter((r) => r.id !== id));
+        } else {
+          setTweet(null);
+        }
+      } else {
+        const body = await res.json().catch(() => ({}));
+        console.error("Delete failed", res.status, body);
+        alert(`Failed to delete: ${body?.error || res.status}`);
+      }
+    } catch (err) {
+      console.error("Delete failed", err);
+      alert("Failed to delete. See console for details.");
+    }
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString("en-US", {
@@ -245,19 +288,33 @@ export function TweetDetailContent() {
           ) : (
             <>
               <div className="border-b border-border p-6 bg-card">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex-shrink-0" />
-                  <div>
-                    <Link
-                      href={`/profile?username=${tweet.author.username}`}
-                      className="font-bold text-foreground hover:underline"
-                    >
-                      {tweet.author.displayName}
-                    </Link>
-                    <p className="text-muted-foreground text-sm">
-                      @{tweet.author.username}
-                    </p>
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-primary/10 rounded-full flex-shrink-0" />
+                    <div>
+                      <Link
+                        href={`/profile/${tweet.author.username}`}
+                        className="font-bold text-foreground hover:underline"
+                      >
+                        {tweet.author.displayName}
+                      </Link>
+                      <p className="text-muted-foreground text-sm">
+                        @{tweet.author.username}
+                      </p>
+                    </div>
                   </div>
+                  {userStatus?.id === tweet.author.id && (
+                    <button
+                      onClick={() => {
+                        if (confirm("Delete this Tweet? This action cannot be undone.")) {
+                          handleDeleteTweet(tweet.id, false);
+                        }
+                      }}
+                      className="text-muted-foreground hover:text-destructive text-sm"
+                    >
+                      Delete
+                    </button>
+                  )}
                 </div>
                 {(tweet.isFlagged || tweet.isDeleted) ? (
                   <div className="mb-4 p-3 bg-muted/50 border border-border rounded-lg">
@@ -385,7 +442,7 @@ export function TweetDetailContent() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <Link
-                              href={`/profile?username=${reply.author.username}`}
+                              href={`/profile/${reply.author.username}`}
                               className="font-bold text-foreground hover:underline truncate"
                             >
                               {reply.author.displayName}
@@ -393,6 +450,20 @@ export function TweetDetailContent() {
                             <span className="text-muted-foreground text-sm truncate">
                               @{reply.author.username}
                             </span>
+                            {userStatus?.id === reply.author.id && (
+                              <button
+                                onClick={() => {
+                                  if (
+                                    confirm("Delete this reply? This action cannot be undone.")
+                                  ) {
+                                    handleDeleteTweet(reply.id, true);
+                                  }
+                                }}
+                                className="text-muted-foreground hover:text-destructive text-xs ml-2"
+                              >
+                                Delete
+                              </button>
+                            )}
                           </div>
                           {(reply.isFlagged || reply.isDeleted) ? (
                             <div className="mt-2 p-3 bg-muted/50 border border-border rounded-lg">

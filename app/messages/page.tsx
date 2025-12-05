@@ -157,6 +157,20 @@ export default function MessagesPage() {
       alert(`Error: ${errorMsg}`);
     }
   };
+  const handleDeleteMessage = async (messageId: string) => {
+    try {
+      const token = localStorage.getItem("auth-token");
+      const res = await fetch(`/api/messages/${messageId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        setMessages((prev) => prev.filter((m) => m.id !== messageId));
+      }
+    } catch (err) {
+      console.error("Delete message failed", err);
+    }
+  };
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -359,6 +373,18 @@ export default function MessagesPage() {
                           >
                             {formatTime(msg.createdAt)}
                           </p>
+                          {isOwn && (
+                            <button
+                              onClick={() => {
+                                if (confirm("Delete this message?")) {
+                                  handleDeleteMessage(msg.id);
+                                }
+                              }}
+                              className="text-xs text-muted-foreground hover:text-destructive px-2"
+                            >
+                              Delete
+                            </button>
+                          )}
                         </div>
                       </div>
                     );

@@ -1303,9 +1303,9 @@ Reply: "${reply}"`
 async function generateEmpathyScore(content) {
     if (!OPENROUTER_API_KEY) {
         return {
-            score: 0.5,
+            score: 50,
             suggestions: []
-        };
+        }; // Return 0-100 range, not 0-1
     }
     try {
         const response = await fetch(OPENROUTER_API_URL, {
@@ -1336,16 +1336,18 @@ Post: "${content}"`
         const aiResponse = data?.choices?.[0]?.message?.content;
         const jsonMatch = aiResponse?.match(/\{[\s\S]*\}/);
         const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : aiResponse);
+        // Convert AI score from 0-1 range to 0-100 range (e.g., 0.21 becomes 21, 0.85 becomes 85)
+        const score0to100 = Math.max(0, Math.min(100, Math.round((parsed.score ?? 0.5) * 100)));
         return {
-            score: parsed.score || 0.5,
+            score: score0to100,
             suggestions: parsed.suggestions || []
         };
     } catch (error) {
         console.error("Empathy score error:", error);
         return {
-            score: 0.5,
+            score: 50,
             suggestions: []
-        };
+        }; // Return 0-100 range on error
     }
 }
 }),
@@ -1476,19 +1478,20 @@ function formatTweetDate(date) {
 function truncateText(text, length = 100) {
     return text.length > length ? text.substring(0, length) + "..." : text;
 }
-function calculateNewEmpathyScore(currentScore, empathyScore, isToxic = false) {
+function calculateNewEmpathyScore(currentScore, tweetEmpathyScore, isToxic = false) {
     let newScore = currentScore;
-    if (isToxic || empathyScore < 0.3) {
-        const decreaseAmount = isToxic ? 8 : Math.max(2, Math.round((0.3 - empathyScore) * 10));
+    // Both currentScore and tweetEmpathyScore are now in 0-100 range
+    if (isToxic || tweetEmpathyScore < 30) {
+        const decreaseAmount = isToxic ? 8 : Math.max(2, Math.round((30 - tweetEmpathyScore) / 10));
         newScore = Math.max(0, currentScore - decreaseAmount);
-    } else if (empathyScore >= 0.7) {
-        const increaseAmount = Math.round(3 + (empathyScore - 0.7) * 6);
+    } else if (tweetEmpathyScore >= 70) {
+        const increaseAmount = Math.round(3 + (tweetEmpathyScore - 70) / 10);
         newScore = Math.min(100, currentScore + increaseAmount);
-    } else if (empathyScore >= 0.5) {
-        const increaseAmount = Math.round(1 + (empathyScore - 0.5) * 5);
+    } else if (tweetEmpathyScore >= 50) {
+        const increaseAmount = Math.round(1 + (tweetEmpathyScore - 50) / 10);
         newScore = Math.min(100, currentScore + increaseAmount);
     } else {
-        const decreaseAmount = Math.round((0.5 - empathyScore) * 2);
+        const decreaseAmount = Math.round((50 - tweetEmpathyScore) / 25);
         newScore = Math.max(0, currentScore - decreaseAmount);
     }
     return Math.max(0, Math.min(100, newScore));
@@ -1647,7 +1650,7 @@ async function POST(request) {
         }
         const empathyAnalysis = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$lib$2f$ai$2d$advanced$2d$moderation$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["generateEmpathyScore"])(content);
         let empathyWarning = null;
-        if (empathyAnalysis.score < 0.3 && moderation.toxicityScore > 0.2) {
+        if (empathyAnalysis.score < 30 && moderation.toxicityScore > 0.2) {
             empathyWarning = {
                 message: "Your post may come across as insensitive. Consider rephrasing.",
                 suggestions: empathyAnalysis.suggestions
@@ -1689,10 +1692,11 @@ async function POST(request) {
         }
         const populatedTweet = await __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$lib$2f$models$2f$Tweet$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["Tweet"].findById(tweet._id).populate("author").lean();
         if (empathyAnalysis.score > 0) {
+            // Note: EmpathyLog stores normalized 0-1 range for historical compatibility
             await __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$lib$2f$models$2f$EmpathyLog$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["EmpathyLog"].create({
                 user: dbUser?._id,
                 tweet: tweet._id,
-                empathyScore: empathyAnalysis.score,
+                empathyScore: empathyAnalysis.score / 100,
                 suggestions: empathyAnalysis.suggestions
             });
         }

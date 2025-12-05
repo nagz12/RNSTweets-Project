@@ -1,15 +1,35 @@
-[00:00:01.551] Server  LOG      ✓ Ready in 1070ms
-[00:00:07.174] Server  LOG      ○ Compiling / ...
-[00:00:08.011] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:08:46.809] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:08:53.924] Server  ERROR   [JSON_PARSE_ERROR] Failed to parse response: ""
-[00:08:59.340] Server  LOG     [MODERATION] Blocked tweet created: 6932a448350e1e082463a46b, User: 6932a19426466c487a7dac7f, Reason: contains profanity, Toxicity: 0.8
-[00:16:12.076] Server  LOG     [MODERATION] Blocked tweet created: 6932a5f9350e1e082463a480, User: 6932a19426466c487a7dac7f, Reason: contains insulting language toward an individual, Toxicity: 0.8
-[00:32:56.261] Server  LOG      ✓ Compiled in 144ms
-[00:33:08.087] Server  LOG      ✓ Compiled in 250ms
-[00:33:23.603] Server  LOG      ✓ Compiled in 149ms
-[00:33:38.296] Server  LOG      ✓ Compiled in 149ms
-[00:33:44.695] Server  LOG      ✓ Compiled in 141ms
-[00:41:52.033] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:42:03.385] Server  LOG     [MODERATION] Blocked tweet created: 6932ac08350e1e082463a4a7, User: 6932a19426466c487a7dac7f, Reason: contains profanity, considered harassment, Toxicity: 0.75
-[00:42:03.495] Server  LOG     [MODERATION] User 6932a19426466c487a7dac7f suspended - Demerits: 45, Empathy: 23%
+[00:00:01.186] Server  LOG      ✓ Ready in 794ms
+[00:00:03.593] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:03:13.647] Server  LOG     [MODERATION] Blocked tweet created: 6932cce093eace0f8dcb49e9, User: 6932cc5d93eace0f8dcb49aa, Reason: The word 'idiot' is an insulting term directed at an individual, constituting harassment., Toxicity: 0.7
+[00:03:57.929] Server  ERROR   [JSON_PARSE_ERROR] Failed to parse response: ""
+[00:04:01.811] Server  LOG     [MODERATION] Blocked tweet created: 6932cd1093eace0f8dcb4a06, User: 6932cc5d93eace0f8dcb49aa, Reason: The word is a profanity that can be used to insult or harass someone., Toxicity: 0.65
+[00:04:19.658] Server  ERROR   [JSON_PARSE_ERROR] Failed to parse response: "{\"sentiment\":\"hostile\",\"emotionalTone\":[\"aggressive\",\"hostile\"],\"isPersonalAttack"
+[00:04:21.738] Server  WARN    [RETRY] Attempt 1/3 failed. Retrying in 102ms. Error: Invalid AI response format
+[00:04:25.407] Server  WARN    [RETRY] Attempt 2/3 failed. Retrying in 233ms. Error: Invalid AI response format
+[00:04:30.111] Server  LOG     [MODERATION] Blocked tweet created: 6932cd2c93eace0f8dcb4a23, User: 6932cc5d93eace0f8dcb49aa, Reason: contains profanity, Toxicity: 0.6
+[00:04:50.901] Server  ERROR   [JSON_PARSE_ERROR] Failed to parse response: ""
+[00:04:53.371] Server  WARN    [RETRY] Attempt 1/3 failed. Retrying in 155ms. Error: Invalid AI response format
+[00:04:56.089] Server  WARN    [RETRY] Attempt 2/3 failed. Retrying in 245ms. Error: Invalid AI response format
+[00:04:59.377] Server  ERROR   2025-12-05T12:17:13.853Z [ERROR] [service=moderation] Moderation error {"error":"Failed after 3 attempts. Last error: Invalid AI response format"}
+[00:05:01.421] Server  ERROR   C:\Users\nagar\OneDrive\Desktop\rnst-weets-social-platform\.next\dev\server\chunks\[root-of-the-server]__5f841d65._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:05:01.517] Server  ERROR   C:\Users\nagar\OneDrive\Desktop\rnst-weets-social-platform\node_modules\.pnpm\next@16.0.3_react-dom@19.2.0_react@19.2.0__react@19.2.0\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:05:01.603] Server  ERROR   C:\Users\nagar\OneDrive\Desktop\rnst-weets-social-platform\.next\dev\server\chunks\173bf__pnpm_fa1d2b42._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:05:01.640] Server  ERROR   C:\Users\nagar\OneDrive\Desktop\rnst-weets-social-platform\node_modules\.pnpm\next@16.0.3_react-dom@19.2.0_react@19.2.0__react@19.2.0\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:05:01.671] Server  ERROR   C:\Users\nagar\OneDrive\Desktop\rnst-weets-social-platform\node_modules\.pnpm\next@16.0.3_react-dom@19.2.0_react@19.2.0__react@19.2.0\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:05:01.707] Server  ERROR   C:\Users\nagar\OneDrive\Desktop\rnst-weets-social-platform\node_modules\.pnpm\next@16.0.3_react-dom@19.2.0_react@19.2.0__react@19.2.0\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:05:01.720] Server  ERROR   C:\Users\nagar\OneDrive\Desktop\rnst-weets-social-platform\node_modules\.pnpm\next@16.0.3_react-dom@19.2.0_react@19.2.0__react@19.2.0\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:05:01.723] Server  ERROR   C:\Users\nagar\OneDrive\Desktop\rnst-weets-social-platform\node_modules\.pnpm\next@16.0.3_react-dom@19.2.0_react@19.2.0__react@19.2.0\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:05:01.726] Server  ERROR   C:\Users\nagar\OneDrive\Desktop\rnst-weets-social-platform\node_modules\.pnpm\next@16.0.3_react-dom@19.2.0_react@19.2.0__react@19.2.0\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:05:01.735] Server  ERROR   Empathy score error: SyntaxError: Unterminated string in JSON at position 107 (line 1 column 108)
+[00:05:01.875] Server  LOG     [EMPATHY] User 6932cc5d93eace0f8dcb49aa - Score: 55% -> 56% (Tweet empathy: 50, Was toxic: false)
+[00:05:13.373] Browser LOG     [CLIENT-DELETE] deleting tweet id 6932cd4c93eace0f8dcb4a3f (original: 6932cd4c93eace0f8dcb4a3f )
+[00:05:16.510] Server  ERROR   C:\Users\nagar\OneDrive\Desktop\rnst-weets-social-platform\node_modules\.pnpm\next@16.0.3_react-dom@19.2.0_react@19.2.0__react@19.2.0\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:05:16.516] Server  ERROR   C:\Users\nagar\OneDrive\Desktop\rnst-weets-social-platform\.next\dev\server\chunks\[root-of-the-server]__9dd148d2._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[00:05:16.519] Server  WARN    Error: Route "/api/tweets/[id]" used `params.id`. `params` is a Promise and must be unwrapped with `await` or `React.use()` before accessing its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+[00:05:16.521] Server  LOG     [DELETE-TWEET] incoming id (params): undefined "type:" "undefined"
+[00:05:16.526] Server  LOG     [DELETE-TWEET] recovered id from URL path: "6932cd4c93eace0f8dcb4a3f"
+[00:05:16.535] Server  LOG     [DELETE-TWEET] request.url: "http://localhost:3000/api/tweets/6932cd4c93eace0f8dcb4a3f" "referer:" "http://localhost:3000/feed" "userAgent:" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+[00:05:25.826] Server  ERROR   [JSON_PARSE_ERROR] Failed to parse response: ""
+[00:05:30.140] Server  LOG     [MODERATION] Blocked tweet created: 6932cd6893eace0f8dcb4a4e, User: 6932cc5d93eace0f8dcb49aa, Reason: The word "stupid" is an insulting remark that can be considered harassment., Toxicity: 0.32
+[00:05:30.200] Server  LOG     [MODERATION] User 6932cc5d93eace0f8dcb49aa suspended - Demerits: 60, Empathy: 41%
+[00:08:05.762] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold

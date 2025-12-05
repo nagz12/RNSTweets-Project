@@ -177,12 +177,78 @@ function Feed() {
                 return;
             }
             setUserStatus({
+                id: data.id,
                 empathyScore: data.empathyScore ?? 100,
                 totalDemerits: data.totalDemerits ?? 0,
                 isSuspended: data.isSuspended ?? false
             });
         } catch (err) {
             console.error("Failed to load user status", err);
+        }
+    };
+    // Improved delete with optimistic UI and error handling
+    const deleteTweet = async (tweetId, tweetObj)=>{
+        const token = localStorage.getItem("auth-token");
+        if (!token) {
+            router.push("/login");
+            return false;
+        }
+        // Optimistic update: remove tweet from UI immediately
+        const previousTweets = tweets;
+        setTweets((prev)=>prev.filter((t)=>t.id !== tweetId));
+        try {
+            // Normalize and log the outgoing id to help diagnose 404s
+            let idStr = "";
+            try {
+                if (tweetId == null) idStr = String(tweetId);
+                else if (typeof tweetId === "string") idStr = tweetId;
+                else if (typeof tweetId === "object") {
+                    // attempt common fields
+                    // @ts-ignore
+                    idStr = tweetId.id || tweetId._id || tweetId.tweetId || JSON.stringify(tweetId);
+                } else {
+                    idStr = String(tweetId);
+                }
+            } catch (e) {
+                idStr = String(tweetId);
+            }
+            console.log("[CLIENT-DELETE] deleting tweet id", idStr, "(original:", tweetId, ")");
+            // Defensive: if idStr is invalid, log the whole tweet object and abort
+            if (!idStr || idStr === "undefined" || idStr === "null") {
+                console.error("[CLIENT-DELETE] Aborting delete: invalid idStr", {
+                    idStr,
+                    tweetObj,
+                    tweetId,
+                    previousTweets
+                });
+                // Rollback optimistic update
+                setTweets(previousTweets);
+                alert("Cannot delete: tweet id is invalid. See console for details.");
+                return false;
+            }
+            const encodedId = encodeURIComponent(idStr);
+            const res = await fetch(`/api/tweets/${encodedId}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            if (res.ok) {
+                return true;
+            }
+            const text = await res.text();
+            console.error("Failed to delete tweet", res.status, text);
+            // Rollback optimistic update
+            setTweets(previousTweets);
+            // Show user-visible error
+            alert(`Failed to delete tweet: ${text || `status ${res.status}`}`);
+            if (res.status === 401) router.push("/login");
+            return false;
+        } catch (err) {
+            console.error("Delete failed", err);
+            setTweets(previousTweets);
+            alert("Failed to delete tweet. Check console for details.");
+            return false;
         }
     };
     const fetchTrends = async ()=>{
@@ -343,7 +409,7 @@ function Feed() {
                                     children: "RNSTweets"
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                    lineNumber: 241,
+                                    lineNumber: 312,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -351,13 +417,13 @@ function Feed() {
                                     children: "RNSIT Community"
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                    lineNumber: 242,
+                                    lineNumber: 313,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                            lineNumber: 240,
+                            lineNumber: 311,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
@@ -371,20 +437,20 @@ function Feed() {
                                             size: 24
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                            lineNumber: 249,
+                                            lineNumber: 320,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             children: "Home"
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                            lineNumber: 250,
+                                            lineNumber: 321,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                    lineNumber: 245,
+                                    lineNumber: 316,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -395,20 +461,20 @@ function Feed() {
                                             size: 24
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                            lineNumber: 256,
+                                            lineNumber: 327,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             children: "Explore"
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                            lineNumber: 257,
+                                            lineNumber: 328,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                    lineNumber: 252,
+                                    lineNumber: 323,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -419,20 +485,20 @@ function Feed() {
                                             size: 24
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                            lineNumber: 263,
+                                            lineNumber: 334,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             children: "Notifications"
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                            lineNumber: 264,
+                                            lineNumber: 335,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                    lineNumber: 259,
+                                    lineNumber: 330,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -443,20 +509,20 @@ function Feed() {
                                             size: 24
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                            lineNumber: 270,
+                                            lineNumber: 341,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             children: "Messages"
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                            lineNumber: 271,
+                                            lineNumber: 342,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                    lineNumber: 266,
+                                    lineNumber: 337,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -467,20 +533,20 @@ function Feed() {
                                             size: 24
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                            lineNumber: 277,
+                                            lineNumber: 348,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             children: "Bookmarks"
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                            lineNumber: 278,
+                                            lineNumber: 349,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                    lineNumber: 273,
+                                    lineNumber: 344,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -491,20 +557,20 @@ function Feed() {
                                             size: 24
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                            lineNumber: 284,
+                                            lineNumber: 355,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             children: "Trending"
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                            lineNumber: 285,
+                                            lineNumber: 356,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                    lineNumber: 280,
+                                    lineNumber: 351,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -515,26 +581,26 @@ function Feed() {
                                             size: 24
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                            lineNumber: 291,
+                                            lineNumber: 362,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             children: "Wellness"
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                            lineNumber: 292,
+                                            lineNumber: 363,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                    lineNumber: 287,
+                                    lineNumber: 358,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                            lineNumber: 244,
+                            lineNumber: 315,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -542,7 +608,7 @@ function Feed() {
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$components$2f$theme$2d$switcher$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ThemeSwitcher"], {}, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                    lineNumber: 296,
+                                    lineNumber: 367,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -553,7 +619,7 @@ function Feed() {
                                             size: 20
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                            lineNumber: 301,
+                                            lineNumber: 372,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -561,25 +627,25 @@ function Feed() {
                                             children: "Logout"
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                            lineNumber: 302,
+                                            lineNumber: 373,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                    lineNumber: 297,
+                                    lineNumber: 368,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                            lineNumber: 295,
+                            lineNumber: 366,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                    lineNumber: 239,
+                    lineNumber: 310,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -600,7 +666,7 @@ function Feed() {
                                         maxLength: 280
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                        lineNumber: 311,
+                                        lineNumber: 382,
                                         columnNumber: 15
                                     }, this),
                                     error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -608,7 +674,7 @@ function Feed() {
                                         children: error
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                        lineNumber: 321,
+                                        lineNumber: 392,
                                         columnNumber: 17
                                     }, this),
                                     aiSuggestions.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -619,7 +685,7 @@ function Feed() {
                                                 children: "💡 AI Suggestions - Try rephrasing:"
                                             }, void 0, false, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                lineNumber: 327,
+                                                lineNumber: 398,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -633,18 +699,18 @@ function Feed() {
                                                         ]
                                                     }, idx, true, {
                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                        lineNumber: 332,
+                                                        lineNumber: 403,
                                                         columnNumber: 23
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                lineNumber: 330,
+                                                lineNumber: 401,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                        lineNumber: 326,
+                                        lineNumber: 397,
                                         columnNumber: 17
                                     }, this),
                                     suggestedEdit && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -655,7 +721,7 @@ function Feed() {
                                                 children: "✨ Suggested Rewrite:"
                                             }, void 0, false, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                lineNumber: 345,
+                                                lineNumber: 416,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -664,13 +730,13 @@ function Feed() {
                                                 children: suggestedEdit
                                             }, void 0, false, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                lineNumber: 348,
+                                                lineNumber: 419,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                        lineNumber: 344,
+                                        lineNumber: 415,
                                         columnNumber: 17
                                     }, this),
                                     empathyWarning && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -683,12 +749,12 @@ function Feed() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                            lineNumber: 358,
+                                            lineNumber: 429,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                        lineNumber: 357,
+                                        lineNumber: 428,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -702,7 +768,7 @@ function Feed() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                lineNumber: 364,
+                                                lineNumber: 435,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -712,13 +778,13 @@ function Feed() {
                                                 children: posting ? "Posting..." : "Post"
                                             }, void 0, false, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                lineNumber: 367,
+                                                lineNumber: 438,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                        lineNumber: 363,
+                                        lineNumber: 434,
                                         columnNumber: 15
                                     }, this),
                                     userStatus?.isSuspended && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -726,18 +792,18 @@ function Feed() {
                                         children: "Your account is suspended due to low empathy score. Posting is disabled."
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                        lineNumber: 376,
+                                        lineNumber: 447,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                lineNumber: 310,
+                                lineNumber: 381,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                            lineNumber: 309,
+                            lineNumber: 380,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -746,44 +812,52 @@ function Feed() {
                                 children: "Loading tweets..."
                             }, void 0, false, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                lineNumber: 385,
+                                lineNumber: 456,
                                 columnNumber: 15
                             }, this) : tweets.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "p-8 text-center text-muted-foreground",
                                 children: "No tweets yet. Follow people to see their posts!"
                             }, void 0, false, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                lineNumber: 389,
+                                lineNumber: 460,
                                 columnNumber: 15
                             }, this) : tweets.map((tweet)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "border-b border-border p-4 hover:bg-muted/50 transition-colors",
                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "flex space-x-4",
                                         children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
-                                                href: `/profile?username=${tweet.author.username}`,
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                onClick: (e)=>{
+                                                    e.stopPropagation();
+                                                    router.push(`/profile/${tweet.author.username}`);
+                                                },
+                                                "aria-label": `Open profile ${tweet.author.username}`,
                                                 className: "w-12 h-12 bg-primary/10 rounded-full flex-shrink-0 hover:opacity-80 transition-opacity"
                                             }, void 0, false, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                lineNumber: 399,
+                                                lineNumber: 470,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 className: "flex-1 min-w-0",
                                                 children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
-                                                        href: `/tweet?id=${tweet.id}`,
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        onClick: ()=>router.push(`/tweet?id=${tweet.id}`),
                                                         className: "block cursor-pointer",
                                                         children: [
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                 className: "flex items-center space-x-2 flex-wrap",
                                                                 children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                        onClick: (e)=>{
+                                                                            e.stopPropagation();
+                                                                            router.push(`/profile/${tweet.author.username}`);
+                                                                        },
                                                                         className: "font-bold text-foreground hover:underline",
                                                                         children: tweet.author.displayName
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                        lineNumber: 409,
+                                                                        lineNumber: 484,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -794,7 +868,7 @@ function Feed() {
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                        lineNumber: 412,
+                                                                        lineNumber: 493,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -802,7 +876,7 @@ function Feed() {
                                                                         children: "·"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                        lineNumber: 415,
+                                                                        lineNumber: 496,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -810,13 +884,26 @@ function Feed() {
                                                                         children: formatDate(tweet.createdAt)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                        lineNumber: 416,
+                                                                        lineNumber: 497,
                                                                         columnNumber: 27
+                                                                    }, this),
+                                                                    userStatus?.id === tweet.author.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                        onClick: async (e)=>{
+                                                                            e.stopPropagation();
+                                                                            if (!confirm("Delete this Tweet? This action cannot be undone.")) return;
+                                                                            await deleteTweet(tweet.id, tweet);
+                                                                        },
+                                                                        className: "text-muted-foreground hover:text-destructive text-xs ml-2",
+                                                                        children: "Delete"
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
+                                                                        lineNumber: 501,
+                                                                        columnNumber: 29
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                lineNumber: 408,
+                                                                lineNumber: 483,
                                                                 columnNumber: 25
                                                             }, this),
                                                             tweet.isFlagged || tweet.isDeleted ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -826,19 +913,19 @@ function Feed() {
                                                                     children: "This content was removed for policy reasons"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                    lineNumber: 422,
+                                                                    lineNumber: 515,
                                                                     columnNumber: 29
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                lineNumber: 421,
+                                                                lineNumber: 514,
                                                                 columnNumber: 27
                                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                                 className: "text-foreground mt-2 break-words",
                                                                 children: tweet.content
                                                             }, void 0, false, {
                                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                lineNumber: 427,
+                                                                lineNumber: 520,
                                                                 columnNumber: 27
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -849,20 +936,23 @@ function Feed() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                lineNumber: 431,
+                                                                lineNumber: 524,
                                                                 columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                        lineNumber: 404,
+                                                        lineNumber: 479,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "flex justify-around mt-3 text-muted-foreground max-w-xs text-sm md:text-base",
                                                         children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
-                                                                href: `/tweet?id=${tweet.id}`,
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                onClick: (e)=>{
+                                                                    e.stopPropagation();
+                                                                    router.push(`/tweet?id=${tweet.id}`);
+                                                                },
                                                                 className: "flex items-center space-x-2 hover:text-primary transition-colors group flex-1 justify-center",
                                                                 children: [
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -871,12 +961,12 @@ function Feed() {
                                                                             size: 16
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                            lineNumber: 441,
+                                                                            lineNumber: 537,
                                                                             columnNumber: 29
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                        lineNumber: 440,
+                                                                        lineNumber: 536,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -884,17 +974,20 @@ function Feed() {
                                                                         children: tweet.replies
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                        lineNumber: 443,
+                                                                        lineNumber: 539,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                lineNumber: 436,
+                                                                lineNumber: 529,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                onClick: ()=>handleRetweetTweet(tweet.id),
+                                                                onClick: (e)=>{
+                                                                    e.stopPropagation();
+                                                                    handleRetweetTweet(tweet.id);
+                                                                },
                                                                 className: `flex items-center space-x-2 transition-colors group flex-1 justify-center ${tweet.isRetweeted ? "text-primary" : "text-muted-foreground hover:text-primary"}`,
                                                                 children: [
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -903,12 +996,12 @@ function Feed() {
                                                                             size: 16
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                            lineNumber: 454,
+                                                                            lineNumber: 553,
                                                                             columnNumber: 29
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                        lineNumber: 453,
+                                                                        lineNumber: 552,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -916,17 +1009,20 @@ function Feed() {
                                                                         children: tweet.retweets
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                        lineNumber: 456,
+                                                                        lineNumber: 555,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                lineNumber: 445,
+                                                                lineNumber: 541,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                onClick: ()=>handleLikeTweet(tweet.id),
+                                                                onClick: (e)=>{
+                                                                    e.stopPropagation();
+                                                                    handleLikeTweet(tweet.id);
+                                                                },
                                                                 className: `flex items-center space-x-2 transition-colors group flex-1 justify-center ${tweet.isLiked ? "text-destructive" : "text-muted-foreground hover:text-destructive"}`,
                                                                 children: [
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -936,12 +1032,12 @@ function Feed() {
                                                                             fill: tweet.isLiked ? "currentColor" : "none"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                            lineNumber: 467,
+                                                                            lineNumber: 569,
                                                                             columnNumber: 29
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                        lineNumber: 466,
+                                                                        lineNumber: 568,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -949,16 +1045,17 @@ function Feed() {
                                                                         children: tweet.likes
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                        lineNumber: 472,
+                                                                        lineNumber: 574,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                lineNumber: 458,
+                                                                lineNumber: 557,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                onClick: (e)=>e.stopPropagation(),
                                                                 className: "flex items-center space-x-2 hover:text-primary transition-colors group flex-1 justify-center",
                                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                     className: "group-hover:bg-primary/10 rounded-full p-2",
@@ -966,51 +1063,51 @@ function Feed() {
                                                                         size: 16
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                        lineNumber: 476,
+                                                                        lineNumber: 581,
                                                                         columnNumber: 29
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                    lineNumber: 475,
+                                                                    lineNumber: 580,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                                lineNumber: 474,
+                                                                lineNumber: 576,
                                                                 columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                        lineNumber: 435,
+                                                        lineNumber: 528,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                lineNumber: 403,
+                                                lineNumber: 478,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                        lineNumber: 398,
+                                        lineNumber: 469,
                                         columnNumber: 19
                                     }, this)
                                 }, tweet.id, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                    lineNumber: 394,
+                                    lineNumber: 465,
                                     columnNumber: 17
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                            lineNumber: 383,
+                            lineNumber: 454,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                    lineNumber: 307,
+                    lineNumber: 378,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1023,7 +1120,7 @@ function Feed() {
                                 children: "What's happening"
                             }, void 0, false, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                lineNumber: 490,
+                                lineNumber: 595,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1033,14 +1130,14 @@ function Feed() {
                                     children: "Loading trends..."
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                    lineNumber: 495,
+                                    lineNumber: 600,
                                     columnNumber: 17
                                 }, this) : trends.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                     className: "text-sm text-muted-foreground",
                                     children: "No trends yet"
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                    lineNumber: 499,
+                                    lineNumber: 604,
                                     columnNumber: 17
                                 }, this) : trends.slice(0, 5).map((trend)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
                                         href: `/explore?q=${encodeURIComponent(trend.hashtag)}`,
@@ -1051,7 +1148,7 @@ function Feed() {
                                                 children: "Trending Worldwide"
                                             }, void 0, false, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                lineNumber: 507,
+                                                lineNumber: 612,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1062,7 +1159,7 @@ function Feed() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                lineNumber: 510,
+                                                lineNumber: 615,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1073,40 +1170,40 @@ function Feed() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                                lineNumber: 513,
+                                                lineNumber: 618,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, trend.id, true, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                        lineNumber: 502,
+                                        lineNumber: 607,
                                         columnNumber: 19
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                                lineNumber: 493,
+                                lineNumber: 598,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                        lineNumber: 489,
+                        lineNumber: 594,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-                    lineNumber: 488,
+                    lineNumber: 593,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-            lineNumber: 237,
+            lineNumber: 308,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/feed/page.tsx",
-        lineNumber: 236,
+        lineNumber: 307,
         columnNumber: 5
     }, this);
 }

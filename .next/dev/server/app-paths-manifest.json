@@ -1,12 +1,15 @@
 {
   "/api/ai/wellness-dashboard/route": "app/api/ai/wellness-dashboard/route.js",
-  "/api/auth/login/route": "app/api/auth/login/route.js",
+  "/api/auth/signup/route": "app/api/auth/signup/route.js",
+  "/api/graphql/route": "app/api/graphql/route.js",
+  "/api/tweets/[id]/route": "app/api/tweets/[id]/route.js",
   "/api/tweets/create/route": "app/api/tweets/create/route.js",
   "/api/tweets/feed/route": "app/api/tweets/feed/route.js",
   "/api/tweets/trending/route": "app/api/tweets/trending/route.js",
   "/api/users/me/route": "app/api/users/me/route.js",
   "/feed/page": "app/feed/page.js",
-  "/login/page": "app/login/page.js",
   "/page": "app/page.js",
+  "/signup/page": "app/signup/page.js",
+  "/trending/page": "app/trending/page.js",
   "/wellness/page": "app/wellness/page.js"
 }

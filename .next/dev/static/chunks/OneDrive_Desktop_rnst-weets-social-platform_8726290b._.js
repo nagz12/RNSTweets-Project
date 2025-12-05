@@ -163,7 +163,7 @@ function NotificationsPage() {
                     className: "text-destructive"
                 }, void 0, false, {
                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                    lineNumber: 62,
+                    lineNumber: 55,
                     columnNumber: 16
                 }, this);
             case "follow":
@@ -172,7 +172,7 @@ function NotificationsPage() {
                     className: "text-primary"
                 }, void 0, false, {
                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                    lineNumber: 64,
+                    lineNumber: 57,
                     columnNumber: 16
                 }, this);
             case "reply":
@@ -182,7 +182,7 @@ function NotificationsPage() {
                     className: "text-primary"
                 }, void 0, false, {
                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                    lineNumber: 67,
+                    lineNumber: 60,
                     columnNumber: 16
                 }, this);
             default:
@@ -191,7 +191,7 @@ function NotificationsPage() {
                     className: "text-primary"
                 }, void 0, false, {
                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                    lineNumber: 69,
+                    lineNumber: 62,
                     columnNumber: 16
                 }, this);
         }
@@ -242,7 +242,7 @@ function NotificationsPage() {
                                     children: "RNSTweets"
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                    lineNumber: 112,
+                                    lineNumber: 101,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -250,13 +250,13 @@ function NotificationsPage() {
                                     children: "Notifications"
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                    lineNumber: 113,
+                                    lineNumber: 102,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                            lineNumber: 111,
+                            lineNumber: 100,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
@@ -269,12 +269,12 @@ function NotificationsPage() {
                                         children: "Home"
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                        lineNumber: 120,
+                                        lineNumber: 109,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                    lineNumber: 116,
+                                    lineNumber: 105,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
@@ -284,12 +284,12 @@ function NotificationsPage() {
                                         children: "Explore"
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                        lineNumber: 126,
+                                        lineNumber: 115,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                    lineNumber: 122,
+                                    lineNumber: 111,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
@@ -300,20 +300,20 @@ function NotificationsPage() {
                                             size: 24
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                            lineNumber: 132,
+                                            lineNumber: 121,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             children: "Notifications"
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                            lineNumber: 133,
+                                            lineNumber: 122,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                    lineNumber: 128,
+                                    lineNumber: 117,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
@@ -323,29 +323,29 @@ function NotificationsPage() {
                                         children: "Messages"
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                        lineNumber: 139,
+                                        lineNumber: 128,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                    lineNumber: 135,
+                                    lineNumber: 124,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                            lineNumber: 115,
+                            lineNumber: 104,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$components$2f$theme$2d$switcher$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ThemeSwitcher"], {}, void 0, false, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                            lineNumber: 142,
+                            lineNumber: 131,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                    lineNumber: 110,
+                    lineNumber: 99,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -358,12 +358,12 @@ function NotificationsPage() {
                                 size: 24
                             }, void 0, false, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                lineNumber: 148,
+                                lineNumber: 136,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                            lineNumber: 147,
+                            lineNumber: 135,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -371,18 +371,18 @@ function NotificationsPage() {
                             children: "Notifications"
                         }, void 0, false, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                            lineNumber: 150,
+                            lineNumber: 138,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$components$2f$theme$2d$switcher$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ThemeSwitcher"], {}, void 0, false, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                            lineNumber: 151,
+                            lineNumber: 139,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                    lineNumber: 146,
+                    lineNumber: 134,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -396,7 +396,7 @@ function NotificationsPage() {
                                     children: "Notifications"
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                    lineNumber: 157,
+                                    lineNumber: 144,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -404,13 +404,13 @@ function NotificationsPage() {
                                     children: "Stay updated with your activity"
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                    lineNumber: 160,
+                                    lineNumber: 147,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                            lineNumber: 156,
+                            lineNumber: 143,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -419,7 +419,7 @@ function NotificationsPage() {
                                 children: "Loading notifications..."
                             }, void 0, false, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                lineNumber: 167,
+                                lineNumber: 153,
                                 columnNumber: 15
                             }, this) : notifications.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "p-8 text-center",
@@ -429,7 +429,7 @@ function NotificationsPage() {
                                         className: "mx-auto text-muted-foreground mb-4"
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                        lineNumber: 172,
+                                        lineNumber: 158,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -437,7 +437,7 @@ function NotificationsPage() {
                                         children: "No new notifications"
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                        lineNumber: 176,
+                                        lineNumber: 162,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -445,13 +445,13 @@ function NotificationsPage() {
                                         children: "Follow more people and engage with posts to get notifications"
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                        lineNumber: 179,
+                                        lineNumber: 165,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                lineNumber: 171,
+                                lineNumber: 157,
                                 columnNumber: 15
                             }, this) : notifications.map((notification)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
                                     href: `/profile?username=${notification.actor.username}`,
@@ -462,7 +462,7 @@ function NotificationsPage() {
                                             children: getNotificationIcon(notification.type)
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                            lineNumber: 192,
+                                            lineNumber: 178,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -476,7 +476,7 @@ function NotificationsPage() {
                                                             children: notification.actor.displayName
                                                         }, void 0, false, {
                                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                                            lineNumber: 197,
+                                                            lineNumber: 183,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -487,13 +487,13 @@ function NotificationsPage() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                                            lineNumber: 200,
+                                                            lineNumber: 186,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                                    lineNumber: 196,
+                                                    lineNumber: 182,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -501,7 +501,7 @@ function NotificationsPage() {
                                                     children: getNotificationText(notification)
                                                 }, void 0, false, {
                                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                                    lineNumber: 204,
+                                                    lineNumber: 190,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -509,41 +509,41 @@ function NotificationsPage() {
                                                     children: formatDate(notification.createdAt)
                                                 }, void 0, false, {
                                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                                    lineNumber: 207,
+                                                    lineNumber: 193,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                            lineNumber: 195,
+                                            lineNumber: 181,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, notification.id, true, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                                    lineNumber: 185,
+                                    lineNumber: 171,
                                     columnNumber: 17
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                            lineNumber: 165,
+                            lineNumber: 151,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-                    lineNumber: 155,
+                    lineNumber: 142,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-            lineNumber: 108,
+            lineNumber: 97,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/notifications/page.tsx",
-        lineNumber: 107,
+        lineNumber: 96,
         columnNumber: 5
     }, this);
 }

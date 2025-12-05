@@ -261,6 +261,22 @@ function MessagesPage() {
             alert(`Error: ${errorMsg}`);
         }
     };
+    const handleDeleteMessage = async (messageId)=>{
+        try {
+            const token = localStorage.getItem("auth-token");
+            const res = await fetch(`/api/messages/${messageId}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            if (res.ok) {
+                setMessages((prev)=>prev.filter((m)=>m.id !== messageId));
+            }
+        } catch (err) {
+            console.error("Delete message failed", err);
+        }
+    };
     const scrollToBottom = ()=>{
         messagesEndRef.current?.scrollIntoView({
             behavior: "smooth"
@@ -306,7 +322,7 @@ function MessagesPage() {
                                     children: "RNSTweets"
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                    lineNumber: 188,
+                                    lineNumber: 202,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -314,13 +330,13 @@ function MessagesPage() {
                                     children: "Messages"
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                    lineNumber: 189,
+                                    lineNumber: 203,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                            lineNumber: 187,
+                            lineNumber: 201,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
@@ -333,12 +349,12 @@ function MessagesPage() {
                                         children: "Home"
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                        lineNumber: 196,
+                                        lineNumber: 210,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                    lineNumber: 192,
+                                    lineNumber: 206,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -349,20 +365,20 @@ function MessagesPage() {
                                             size: 24
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                            lineNumber: 202,
+                                            lineNumber: 216,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             children: "Messages"
                                         }, void 0, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                            lineNumber: 203,
+                                            lineNumber: 217,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                    lineNumber: 198,
+                                    lineNumber: 212,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -372,29 +388,29 @@ function MessagesPage() {
                                         children: "Explore"
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                        lineNumber: 209,
+                                        lineNumber: 223,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                    lineNumber: 205,
+                                    lineNumber: 219,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                            lineNumber: 191,
+                            lineNumber: 205,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$components$2f$theme$2d$switcher$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ThemeSwitcher"], {}, void 0, false, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                            lineNumber: 212,
+                            lineNumber: 226,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                    lineNumber: 186,
+                    lineNumber: 200,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -408,12 +424,12 @@ function MessagesPage() {
                                     size: 24
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                    lineNumber: 222,
+                                    lineNumber: 236,
                                     columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                lineNumber: 218,
+                                lineNumber: 232,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -421,12 +437,12 @@ function MessagesPage() {
                                 children: "Messages"
                             }, void 0, false, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                lineNumber: 224,
+                                lineNumber: 238,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$components$2f$theme$2d$switcher$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ThemeSwitcher"], {}, void 0, false, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                lineNumber: 225,
+                                lineNumber: 239,
                                 columnNumber: 15
                             }, this)
                         ]
@@ -439,12 +455,12 @@ function MessagesPage() {
                                     size: 24
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                    lineNumber: 230,
+                                    lineNumber: 244,
                                     columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                lineNumber: 229,
+                                lineNumber: 243,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -452,19 +468,19 @@ function MessagesPage() {
                                 children: "Messages"
                             }, void 0, false, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                lineNumber: 232,
+                                lineNumber: 246,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$components$2f$theme$2d$switcher$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ThemeSwitcher"], {}, void 0, false, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                lineNumber: 233,
+                                lineNumber: 247,
                                 columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true)
                 }, void 0, false, {
                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                    lineNumber: 215,
+                    lineNumber: 229,
                     columnNumber: 9
                 }, this),
                 (!selectedConversation || !isMobileView) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -478,7 +494,7 @@ function MessagesPage() {
                                     children: "Messages"
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                    lineNumber: 245,
+                                    lineNumber: 259,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -486,13 +502,13 @@ function MessagesPage() {
                                     children: "Your conversations"
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                    lineNumber: 246,
+                                    lineNumber: 260,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                            lineNumber: 244,
+                            lineNumber: 258,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -502,7 +518,7 @@ function MessagesPage() {
                                 children: "Loading messages..."
                             }, void 0, false, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                lineNumber: 252,
+                                lineNumber: 266,
                                 columnNumber: 17
                             }, this) : conversations.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "p-8 text-center text-muted-foreground",
@@ -512,14 +528,14 @@ function MessagesPage() {
                                         className: "mx-auto mb-2 opacity-50"
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                        lineNumber: 257,
+                                        lineNumber: 271,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         children: "No conversations yet"
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                        lineNumber: 258,
+                                        lineNumber: 272,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -527,13 +543,13 @@ function MessagesPage() {
                                         children: "Start a conversation by visiting someone's profile"
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                        lineNumber: 259,
+                                        lineNumber: 273,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                lineNumber: 256,
+                                lineNumber: 270,
                                 columnNumber: 17
                             }, this) : conversations.map((conv)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                     onClick: ()=>handleSelectConversation(conv.user.id),
@@ -545,7 +561,7 @@ function MessagesPage() {
                                                 className: "w-12 h-12 bg-primary/10 rounded-full flex-shrink-0"
                                             }, void 0, false, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                                lineNumber: 273,
+                                                lineNumber: 287,
                                                 columnNumber: 23
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -556,7 +572,7 @@ function MessagesPage() {
                                                         children: conv.user.displayName
                                                     }, void 0, false, {
                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                                        lineNumber: 275,
+                                                        lineNumber: 289,
                                                         columnNumber: 25
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -564,13 +580,13 @@ function MessagesPage() {
                                                         children: conv.lastMessage || "@" + conv.user.username
                                                     }, void 0, false, {
                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                                        lineNumber: 278,
+                                                        lineNumber: 292,
                                                         columnNumber: 25
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                                lineNumber: 274,
+                                                lineNumber: 288,
                                                 columnNumber: 23
                                             }, this),
                                             conv.unreadCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -578,29 +594,29 @@ function MessagesPage() {
                                                 children: conv.unreadCount
                                             }, void 0, false, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                                lineNumber: 283,
+                                                lineNumber: 297,
                                                 columnNumber: 25
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                        lineNumber: 272,
+                                        lineNumber: 286,
                                         columnNumber: 21
                                     }, this)
                                 }, conv.user.id, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                    lineNumber: 265,
+                                    lineNumber: 279,
                                     columnNumber: 19
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                            lineNumber: 250,
+                            lineNumber: 264,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                    lineNumber: 239,
+                    lineNumber: 253,
                     columnNumber: 11
                 }, this),
                 selectedConversation ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -614,7 +630,7 @@ function MessagesPage() {
                                     children: conversations.find((c)=>c.user.id === selectedConversation)?.user.displayName
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                    lineNumber: 299,
+                                    lineNumber: 313,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -625,13 +641,13 @@ function MessagesPage() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                    lineNumber: 305,
+                                    lineNumber: 319,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                            lineNumber: 298,
+                            lineNumber: 312,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -643,12 +659,12 @@ function MessagesPage() {
                                     children: "No messages yet. Start the conversation!"
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                    lineNumber: 320,
+                                    lineNumber: 334,
                                     columnNumber: 19
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                lineNumber: 319,
+                                lineNumber: 333,
                                 columnNumber: 17
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
                                 children: [
@@ -670,12 +686,12 @@ function MessagesPage() {
                                                             children: msg.content
                                                         }, void 0, false, {
                                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                                            lineNumber: 349,
+                                                            lineNumber: 363,
                                                             columnNumber: 29
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                                        lineNumber: 338,
+                                                        lineNumber: 352,
                                                         columnNumber: 27
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -683,18 +699,31 @@ function MessagesPage() {
                                                         children: formatTime(msg.createdAt)
                                                     }, void 0, false, {
                                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                                        lineNumber: 353,
+                                                        lineNumber: 367,
                                                         columnNumber: 27
+                                                    }, this),
+                                                    isOwn && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                        onClick: ()=>{
+                                                            if (confirm("Delete this message?")) {
+                                                                handleDeleteMessage(msg.id);
+                                                            }
+                                                        },
+                                                        className: "text-xs text-muted-foreground hover:text-destructive px-2",
+                                                        children: "Delete"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
+                                                        lineNumber: 377,
+                                                        columnNumber: 29
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                                lineNumber: 333,
+                                                lineNumber: 347,
                                                 columnNumber: 25
                                             }, this)
                                         }, msg.id, false, {
                                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                            lineNumber: 327,
+                                            lineNumber: 341,
                                             columnNumber: 23
                                         }, this);
                                     }),
@@ -702,14 +731,14 @@ function MessagesPage() {
                                         ref: messagesEndRef
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                        lineNumber: 366,
+                                        lineNumber: 392,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, void 0, true)
                         }, void 0, false, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                            lineNumber: 314,
+                            lineNumber: 328,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -724,7 +753,7 @@ function MessagesPage() {
                                     className: "flex-1 bg-input border border-border rounded-full px-4 py-2 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm lg:text-base"
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                    lineNumber: 372,
+                                    lineNumber: 398,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -735,24 +764,24 @@ function MessagesPage() {
                                         size: 20
                                     }, void 0, false, {
                                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                        lineNumber: 385,
+                                        lineNumber: 411,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                    lineNumber: 380,
+                                    lineNumber: 406,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                            lineNumber: 371,
+                            lineNumber: 397,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                    lineNumber: 296,
+                    lineNumber: 310,
                     columnNumber: 11
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "hidden lg:flex flex-1 items-center justify-center text-muted-foreground",
@@ -764,7 +793,7 @@ function MessagesPage() {
                                 className: "mx-auto mb-4 opacity-50"
                             }, void 0, false, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                lineNumber: 392,
+                                lineNumber: 418,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$OneDrive$2f$Desktop$2f$rnst$2d$weets$2d$social$2d$platform$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -772,29 +801,29 @@ function MessagesPage() {
                                 children: "Select a conversation to start messaging"
                             }, void 0, false, {
                                 fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                                lineNumber: 393,
+                                lineNumber: 419,
                                 columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                        lineNumber: 391,
+                        lineNumber: 417,
                         columnNumber: 13
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-                    lineNumber: 390,
+                    lineNumber: 416,
                     columnNumber: 11
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-            lineNumber: 184,
+            lineNumber: 198,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/OneDrive/Desktop/rnst-weets-social-platform/app/messages/page.tsx",
-        lineNumber: 183,
+        lineNumber: 197,
         columnNumber: 5
     }, this);
 }
