@@ -1,0 +1,31 @@
+{
+  "sorted_middleware": [],
+  "middleware": {
+    "/": {
+      "files": [
+        "server/edge/chunks/OneDrive_Desktop_rnst-weets-social-platform_0ccca39f._.js",
+        "server/edge/chunks/[root-of-the-server]__13d31f93._.js",
+        "server/edge/chunks/turbopack-OneDrive_Desktop_rnst-weets-social-platform_edge-wrapper_04e6092f.js"
+      ],
+      "name": "middleware",
+      "page": "/",
+      "matchers": [
+        {
+          "regexp": "/:nextData(_next/data/[^/]{1,})?/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*){(\\\\.json)}?",
+          "originalSource": "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "development",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "e5yx/g7y+VL7UzJBOlnJiS/DaiHNyYFnb8w4sDQ2io8=",
+        "__NEXT_PREVIEW_MODE_ID": "cfa1aca0ef5e250376bd614e283dd01b",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "5dac59778729e81af363a164852c22d30fff2c09b5c3545faf255fc6f3fa50ea",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "8871a59543e5e38d11428544398ca3afb965310f45e0b35cce71232cbc3c1e7d"
+      }
+    }
+  },
+  "instrumentation": null,
+  "functions": {}
+}

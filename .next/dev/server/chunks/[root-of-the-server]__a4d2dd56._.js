@@ -244,13 +244,20 @@ const userSchema = new __TURBOPACK__imported__module__$5b$externals$5d2f$mongoos
         type: Boolean,
         default: false
     },
+    suspendedAt: {
+        type: Date
+    },
     demeritPoints: {
+        type: Number,
+        default: 0
+    },
+    totalDemerits: {
         type: Number,
         default: 0
     },
     empathyScore: {
         type: Number,
-        default: 50,
+        default: 100,
         min: 0,
         max: 100
     },

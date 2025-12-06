@@ -84,7 +84,7 @@ const metadata = {
                 media: "(prefers-color-scheme: dark)"
             },
             {
-                url: "/icon.svg",
+                url: "/icon-dark-32x32.png",
                 type: "image/svg+xml"
             }
         ],
